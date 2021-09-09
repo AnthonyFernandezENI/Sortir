@@ -51,7 +51,7 @@ class SortirAuthenticator extends AbstractLoginFormAuthenticator
         }
 
         // For example:
-        return new RedirectResponse($this->urlGenerator->generate('home'));
+        return new RedirectResponse($this->urlGenerator->generate('sortie_index'));
         //throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
     }
 

@@ -1,0 +1,28 @@
+body{
+    background:#ffbf85;
+}
+
+.title-bar{
+    background:#00407a;
+}
+
+.white-font{
+    color: white;
+}
+
+a:hover{
+    color:#00407a;
+}
+
+a:active{
+    color: #00407a;
+}
+
+a:focus{
+    color: #ffbf85;
+}
+
+li:hover{
+    background:#ffffff;
+    border-radius: 1em;
+}

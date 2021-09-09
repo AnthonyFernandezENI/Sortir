@@ -69,12 +69,19 @@ class ProfilController extends AbstractController
     /**
      * @Route("/{id}/edit", name="profil_edit", methods={"GET","POST"})
      */
-    public function edit(Request $request, Participant $participant): Response
+    public function edit(Request $request, UserPasswordEncoderInterface $passwordEncoder, Participant $participant): Response
     {
         $form = $this->createForm(ParticipantType::class, $participant);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $participant->setPassword(
+
+                $passwordEncoder->encodePassword(
+                    $participant,
+                    $form->get('password')->getData()
+                )
+            );
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute('profil_index', [], Response::HTTP_SEE_OTHER);

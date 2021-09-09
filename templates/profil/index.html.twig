@@ -10,15 +10,13 @@
             <tr>
                 <th>Id</th>
                 <th>Pseudo</th>
-                <th>Roles</th>
-                <th>Password</th>
                 <th>Nom</th>
                 <th>Prenom</th>
                 <th>Telephone</th>
                 <th>Mail</th>
-                <th>Administrateur</th>
+                <th>Admin</th>
                 <th>Actif</th>
-                <th>actions</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -26,26 +24,24 @@
             <tr>
                 <td>{{ participant.id }}</td>
                 <td>{{ participant.pseudo }}</td>
-                <td>{{ participant.roles ? participant.roles|json_encode : '' }}</td>
-                <td>{{ participant.password }}</td>
                 <td>{{ participant.nom }}</td>
                 <td>{{ participant.prenom }}</td>
                 <td>{{ participant.telephone }}</td>
                 <td>{{ participant.mail }}</td>
-                <td>{{ participant.administrateur ? 'Yes' : 'No' }}</td>
-                <td>{{ participant.actif ? 'Yes' : 'No' }}</td>
+                <td>{{ participant.administrateur ? 'Oui' : 'Non' }}</td>
+                <td>{{ participant.actif ? 'Oui' : 'Non' }}</td>
                 <td>
-                    <a href="{{ path('profil_show', {'id': participant.id}) }}">show</a>
-                    <a href="{{ path('profil_edit', {'id': participant.id}) }}">edit</a>
+                    <a href="{{ path('profil_show', {'id': participant.id}) }}">Voir</a><br>
+                    <a href="{{ path('profil_edit', {'id': participant.id}) }}">Modifier</a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="11">no records found</td>
+                <td colspan="11">Aucun enregistrement</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('profil_new') }}">Create new</a>
+    <button class="button"><a class="white-font" href="{{ path('profil_new') }}">Nouveau</a></button>
 {% endblock %}

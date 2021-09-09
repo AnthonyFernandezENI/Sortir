@@ -2,31 +2,32 @@
 
 namespace App\Form;
 
-use App\Entity\Ville;
-use App\Entity\Villes;
+use App\Entity\Lieu;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class VilleType extends AbstractType
+class LieuType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('nom', EntityType::class,
-                ["label" => "Ville" ,
-                    'class' => Ville::class,
+                ["label" => "Lieu" ,
+                    'class' => Lieu::class,
                     'choice_label'=>"nom"])
-
-            ->add('codePostal')
-        ;
+            ->add('rue')
+            ->add('longitude')
+            ->add('latitude')
+            ->add('ville', VilleType::class)
+       ;
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Ville::class,
+            'data_class' => Lieu::class,
         ]);
     }
 }

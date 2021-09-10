@@ -4,18 +4,19 @@
 
 {% block body %}
 
-<div class="grid-container">
-    <h1>Sorties</h1>
+    <div class="grid-container-fluid">
+        <h1>Sorties</h1>
 
-    <div class="float-right">
+    <div class=" grid-container-fluid float-right">
         Date du jour : {{ "now"| date ("d/m/Y") }}</div> <br>
 
-    <div class="float-right">
-        Particpant : {{ app.user.prenom}}</div>
+    <div class="grid-container-fluid float-right">
+        Particpant : {{ app.user.prenom }}</div>
+    </div>
 
-
-
-    <h5>Filtrer les sorties</h5>
+    <div class="grid-container">
+        <h5>Filtrer les sorties</h5>
+    </div>
 
     {# {{ form_start(form) }} #}
     {# {{ form_label(formSortie.nom,'Nom de la sortie',{'label_attr':{'class':'form-label'}}) }} #}
@@ -23,27 +24,30 @@
     {# #}
     {# {{ form_end(form) }} #}
 
+
     <form>
-        <div class="grid-x grid-padding-x">
-            <div class="medium-5 cell">
-                <label>Sites </label>
-                <select>
-                    {# <option> #}
-                    {# {% for site in sites %} #}
-                    {# <option value="{{ site.id }}">{{ site.nom }}</option> #}
-                    {# {% endfor %} #}
-                    {# </option> #}
-                </select>
+        <div class="grid-container">
+            <div class="grid-x grid-padding-x">
+                <div class="medium-6 cell small-3 medium-4 large-5">
+                    <label>Sites </label>
+                    <select>
+                        {# <option> #}
+                        {# {% for sites in site %} // chaque lieu est une itération #}
+                        {# <option value="{{ sites.id }}">{{ sites.nom }}</option> #}
+                        {# {% endfor %} #}
+                        {# </option> #}
+                    </select>
+                </div>
+                <div class="medium-6 cell small-3 medium-4 large-5">
+                    <label>Le nom de la sortie contient </label>
+                    <input type="search" placeholder="Rechercher">
+                    <button type="button" class="button">Rechercher</button>
+                </div>
             </div>
         </div>
+    </form>
 
-        <div class="grid-x grid-padding-x">
-            <div class="medium-5 cell">
-                <label>Le nom de la sortie contient  </label>
-                    <input type="text" placeholder="rechercher">
-            </div>
-        </div>
-
+    <div class="grid-container">
         <fieldset class="large-7 cell">
             <input id="checkbox1" type="checkbox"><label for="checkbox1">Sorties dont je suis l'organisateur</label>
             <input id="checkbox2" type="checkbox"><label for="checkbox2">Sorties auxquelles je suis inscrit/e</label>
@@ -51,83 +55,76 @@
                 inscrit/e</label>
             <input id="checkbox4" type="checkbox"><label for="checkbox3">Sorties passées</label>
         </fieldset>
+    </div>
     </form>
 
-    <div class="row collapse date" id="dpMonths" data-date-format="mm/yyyy" data-start-view="year" data-min-view="year"
-         style="max-width:200px;">
-        <div class="small-2 columns">
-            <span class="prefix"><i class="fa fa-calendar"></i></span>
+    <div class="grid-container">
+        <div class="grid-x grid-padding-x">
+            <div class="row date" style="max-width:200px;">
+                <div class="small-2 columns">
+                    <span><i class="fa fa-calendar"></i></span>
+                </div>
+                <label>Entre </label>
+                <div class="small-10 columns"><input type="datetime-local"></div>
+                <label>Et</label>
+                <div class="small-10 columns"><input type="datetime-local"></div>
+            </div>
+            <script>
+                $(function () {
+                    $('#dpt').fdatepicker({
+                        format: 'mm-dd-yyyy hh:ii',
+                        pickTime: true
+                    });
+                });
+            </script>
         </div>
-        <label>Entre </label>
-        <div class="small-10 columns"><input size="16" type="datetime-local"></div>
     </div>
-    <script>
-        $(function () {
-            $('#dpt').fdatepicker({
-                format: 'mm-dd-yyyy hh:ii',
-                pickTime: true
-            });
-        });
-    </script>
 
-    <div class="row collapse date" id="dpMonths" data-date-format="mm/yyyy" data-start-view="year" data-min-view="year"
-         style="max-width:200px;">
-        <div class="small-2 columns">
-            <span class="prefix"><i class="fa fa-calendar"></i></span>
+
+    <div class="grid-container">
+        <div class="grid-x grid-padding-x">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Nom de la sortie</th>
+                    <th>Date de la sortie</th>
+                    <th>Clôture</th>
+                    <th>Inscrits / places</th>
+                    <th>Etat</th>
+                    <th>Inscrit</th>
+                    <th>Organisateur</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
         </div>
-        <label>Et</label>
-        <div class="small-10 columns"><input size="16" type="datetime-local"></div>
-    </div>
-    <script>
-        $(function () {
-            $('#dpt').fdatepicker({
-                format: 'mm-dd-yyyy hh:ii',
-                pickTime: true
-            });
-        });
-    </script>
-
-
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Nom de la sortie</th>
-            <th>Date de la sortie</th>
-            <th>Clôture</th>
-            <th>Inscrits / places</th>
-            <th>Etat</th>
-            <th>Inscrit</th>
-            <th>Organisateur</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
         <tbody>
         {% for sortie in sorties %}
             <tr>
-                <td>{{ sortie.nom }}</td>
-                <td>{{ sortie.dateDebut ? sortie.dateDebut|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ sortie.dateCloture ? sortie.dateCloture|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ sortie.nbInscriptionsMax }}</td>
-                <td>{{ sortie.etat.libelle }}</td>
+                <div class="grid-container">
+                    <td>{{ sortie.nom }}</td>
+                    <td>{{ sortie.dateDebut ? sortie.dateDebut|date('Y-m-d H:i:s') : '' }}</td>
+                    <td>{{ sortie.dateCloture ? sortie.dateCloture|date('Y-m-d H:i:s') : '' }}</td>
+                    <td>{{ sortie.nbInscriptionsMax }}</td>
+                    <td>{{ sortie.etat.libelle }}</td>
 
-                <td> Inscription</td>
-                {# {% if app.user %} #}
-                {# <p> {{ app.user.sortie.inscription }} ? 'Oui' : 'Non' </p> #}
-                {# {% endif %} </td> #}
+                    <td> Inscription</td>
+                    {# {% if app.user %} #}
+                    {# <p> {{ app.user.sortie.inscription }} ? 'Oui' : 'Non' </p> #}
+                    {# {% endif %} </td> #}
 
-                <td> Organisateur</td>
-                {# <td> #}
-                {# {% if app.user %} #}
-                {# <p>    {{ app.user.organisateur }} ? .getNom : 'Non' </p> #}
-                {# {% endif %} #}
-                {# </td> #}
+                    <td> Organisateur</td>
+                    {# <td> #}
+                    {# {% if app.user %} #}
+                    {# <p>    {{ app.user.organisateur }} ? .getNom : 'Non' </p> #}
+                    {# {% endif %} #}
+                    {# </td> #}
 
-                <td>
-                    <a href="{{ path('sortie_show', {'id': sortie.id}) }}">Afficher</a>
-                    <a href="{{ path('sortie_edit', {'id': sortie.id}) }}">Modifier</a>
-                    {# <a href="{{ path('', {'id': }) }}">Se désister</a> #}
-                    {# <a href="{{ path('', {'id': }) }}">S'inscrire</a> #}
-                </td>
+                    <td>
+                        <a href="{{ path('sortie_show', {'id': sortie.id}) }}">Afficher</a>
+                        <a href="{{ path('sortie_edit', {'id': sortie.id}) }}">Modifier</a>
+                        {# <a href="{{ path('', {'id': }) }}">Se désister</a> #}
+                        {# <a href="{{ path('', {'id': }) }}">S'inscrire</a> #}
+                    </td>
             </tr>
         {% else %}
             <tr>
@@ -135,8 +132,14 @@
             </tr>
         {% endfor %}
         </tbody>
-    </table>
+        </table>
+    </div>
+    </div>
 
-    <a href="{{ path('sortie_new') }}" class="button secondary">Créer une sortie </a>
+    <div class="grid-container">
+        <div class="grid-x grid-padding-x">
+            <a href="{{ path('sortie_new') }}" class="button secondary">Créer une sortie </a>
+        </div>
+    </div>
 
-    {% endblock %}
+{% endblock %}

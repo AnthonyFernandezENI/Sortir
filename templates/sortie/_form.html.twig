@@ -1,6 +1,7 @@
 {{ form_start(form) }}
     {{ form_widget(form) }}
 <select name="places_to_go" id="places_to_go">
+    <option selected="selected" disabled>- Choisissez un lieu -</option>
     {% for lieu in lieux %}
         <option>{{ lieu.nom }}</option>
     {% endfor %}
@@ -20,7 +21,7 @@
         }
         if(trouver){
             document.getElementById("affichage").innerText =
-                trouver.nom + " " + trouver.rue + " " + trouver.longitude + " " + trouver.latitude
+                trouver.nom + " " + trouver.rue + " " + trouver.longitude + " " + trouver.latitude + " " + trouver.ville.nom + " " + trouver.ville.codePostal
             ;
         }
     });

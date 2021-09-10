@@ -10,8 +10,17 @@
     <div class="float-right">
         Date du jour : {{ "now"| date ("d/m/Y") }}</div> <br>
 
+
     <div class="float-right">
-        Particpant : {{ app.user.prenom}}</div>
+        {% if app.user %}
+        Participant : {{ app.user.prenom}}
+        {% else %}
+        Non connecté
+        {% endif %}
+    </div>
+
+
+
 
 
 

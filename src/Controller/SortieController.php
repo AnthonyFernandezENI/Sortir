@@ -25,9 +25,13 @@ class SortieController extends AbstractController
      */
     public function index(SortieRepository $sortieRepository): Response
     {
-        return $this->render('sortie/index.html.twig', [
-            'sorties' => $sortieRepository->findAll(),
-        ]);
+        if (!$this->isGranted('IS_AUTHENTICATED_FULLY')){
+            return $this->redirectToRoute('app_login');
+        } else {
+            return $this->render('sortie/index.html.twig', [
+                'sorties' => $sortieRepository->findAll(),
+            ]);
+        }
     }
 
     /**

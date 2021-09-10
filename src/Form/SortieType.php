@@ -2,7 +2,6 @@
 
 namespace App\Form;
 
-use App\Entity\Lieu;
 use App\Entity\Sortie;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -33,9 +32,9 @@ class SortieType extends AbstractType
 //            ->add('urlPhoto')
 //            ->add('etat', EntityType::class, ["label" => "Etat" , 'class' => Etat::class, 'choice_label' => "libelle"])
 //            ->add('organisateur', TextType::class ,["label"=>"Organisateur", "data"=>$this->security->getUser()->getId()])
-            ->add('lieu', LieuType::class)
+            //->add('lieu', LieuType::class)
 
-            ->add('Enregistrer',SubmitType::class)
+            //->add('Enregistrer',SubmitType::class)
             //->add('Publier',SubmitType::class);
             //->add('Annuler',SubmitType::class);
         ;

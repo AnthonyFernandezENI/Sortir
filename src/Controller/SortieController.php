@@ -3,8 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Sortie;
-use App\Entity\Sorties;
+use App\Entity\Lieu;
+use App\Entity\Ville;
+use App\Form\LieuType;
 use App\Form\SortieType;
+use App\Form\VilleType;
+use App\Repository\LieuRepository;
 use App\Repository\SortieRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,15 +31,24 @@ class SortieController extends AbstractController
     }
 
     /**
-     * @Route("/new", name="sortie_new", methods={"GET","POST"})
+     * @Route("/new/{id}", name="sortie_new", methods={"GET","POST"})
      */
     public function new(Request $request): Response
     {
         $sortie = new Sortie();
+        $lieu = new Lieu();
+        $ville = new Ville();
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
 
+        $repo = $this->getDoctrine()->getRepository(Lieu::class);
+        $lieu = $repo->findAllPlaces();
+//        dd($lieu);
+
+
+
         if ($form->isSubmitted() && $form->isValid()) {
+
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($sortie);
             $entityManager->flush();
@@ -46,6 +59,7 @@ class SortieController extends AbstractController
 
         return $this->renderForm('sortie/new.html.twig', [
             'sortie' => $sortie,
+            'lieux' => $lieu,
             'form' => $form,
         ]);
     }

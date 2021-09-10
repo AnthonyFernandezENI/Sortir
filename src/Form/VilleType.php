@@ -3,7 +3,6 @@
 namespace App\Form;
 
 use App\Entity\Ville;
-use App\Entity\Villes;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -15,7 +14,7 @@ class VilleType extends AbstractType
     {
         $builder
             ->add('nom', EntityType::class,
-                ["label" => "Ville" ,
+                ["label" => false ,
                     'class' => Ville::class,
                     'choice_label'=>"nom"])
 

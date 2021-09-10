@@ -19,6 +19,16 @@ class LieuRepository extends ServiceEntityRepository
         parent::__construct($registry, Lieu::class);
     }
 
+    public function findAllPlaces(): ?Array
+    {
+        return $this->createQueryBuilder('l')
+            ->innerJoin('l.ville', 'v')
+            ->addSelect('v')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
     // /**
     //  * @return Lieu[] Returns an array of Lieu objects
     //  */

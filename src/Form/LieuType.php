@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Lieu;
+use Doctrine\DBAL\Types\TextType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -14,20 +15,20 @@ class LieuType extends AbstractType
     {
         $builder
             ->add('nom', EntityType::class,
-                ["label" => "Lieu" ,
+                ["label" => false ,
                     'class' => Lieu::class,
                     'choice_label'=>"nom"])
             ->add('rue')
             ->add('longitude')
             ->add('latitude')
-            ->add('ville', VilleType::class)
-       ;
+            //->add('ville', VilleType::class)
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Lieu::class,
+            'data_class' => Lieu::class
         ]);
     }
 }

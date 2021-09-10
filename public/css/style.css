@@ -1,6 +1,15 @@
 body{
     background:#ffbf85;
 }
+.disabled
+{
+    pointer-events: none;
+
+    /* for "disabled" effect */
+    opacity: 0.7;
+    padding: 0em;
+    margin: 0em;
+}
 
 .title-bar{
     background:#00407a;

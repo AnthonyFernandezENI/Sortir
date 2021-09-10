@@ -1,4 +1,10 @@
 {{ form_start(form) }}
     {{ form_widget(form) }}
+    <label>Lieu</label>
+    <select name="places_to_go" id="places_to_go">
+        {% for lieu in lieux %}
+            <option>{{ lieu.nom }}</option>
+        {% endfor %}
+    </select>
     <button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
+{{ form_end(form.nom) }}

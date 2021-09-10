@@ -31,7 +31,7 @@ class SortieController extends AbstractController
     }
 
     /**
-     * @Route("/new/{id}", name="sortie_new", methods={"GET","POST"})
+     * @Route("/new", name="sortie_new", methods={"GET","POST"})
      */
     public function new(Request $request): Response
     {

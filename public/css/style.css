@@ -35,3 +35,13 @@ li:hover{
     background:#ffffff;
     border-radius: 1em;
 }
+
+.button{
+    border-radius: 1em;
+    background : #00407a ;
+}
+
+.button:hover{
+    background:#999999;
+}
+

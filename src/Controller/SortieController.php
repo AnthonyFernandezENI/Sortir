@@ -12,6 +12,7 @@ use App\Form\LieuType;
 use App\Form\SortieType;
 use App\Form\VilleType;
 use App\Repository\LieuRepository;
+use App\Repository\SiteRepository;
 use App\Repository\SortieRepository;
 use Couchbase\Document;
 use http\Client\Curl\User;
@@ -40,13 +41,15 @@ class SortieController extends AbstractController
     /**
      * @Route("/", name="sortie_index", methods={"GET"})
      */
-    public function index(SortieRepository $sortieRepository): Response
+    public function index(SortieRepository $sortieRepository, SiteRepository $siteRepository): Response
     {
+
         if (!$this->isGranted('IS_AUTHENTICATED_FULLY')){
             return $this->redirectToRoute('app_login');
         } else {
             return $this->render('sortie/index.html.twig', [
                 'sorties' => $sortieRepository->findAll(),
+                  'sites'=> $siteRepository->findAll(),
             ]);
         }
     }

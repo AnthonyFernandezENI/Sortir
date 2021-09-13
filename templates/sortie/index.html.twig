@@ -86,6 +86,7 @@
         <tbody>
         {% for sortie in sorties %}
             <tr>
+
                 <div class="grid-container">
                     <td>{{ sortie.nom }}</td>
                     <td>{{ sortie.dateDebut ? sortie.dateDebut|date('Y-m-d H:i:s') : '' }}</td>
@@ -94,7 +95,7 @@
                     <td>{{ sortie.etat.libelle }}</td>
 
                     {# TO DO #}
-                    <td> <div style="text-align: center;"> {{ app.user.pseudo ? 'x' : ''}} </div> </td>  TO DO
+                    <td> <div style="text-align: center;"> {{ app.user.pseudo ? 'x' : ''}} </div> </td>
 
                     <td>{{ sortie.organisateur.prenom}} {{ sortie.organisateur.nom}} </td>
 
@@ -105,13 +106,18 @@
                         <a href="{{ path('sortie_edit', {'id': sortie.id}) }}">Modifier</a>
                         {% endif %}
 
-                        {# TO DO #}
-{#                        {% if app.user.id == %}#}
-{#                        <a href="{{ path('', {'id': }) }}">Se désister</a> #}
-{#                        {% endif %}#}
-                        {# <a href="{{ path('', {'id': }) }}">S'inscrire</a> #}
-                        {# <a href="{{ path('', {'id': }) }}">Annuler</a> #}
+                        {% if (sortie.dateDebut | date("U") > "now"|date("U")) and (sortie.etat.libelle == "Ouverte") %}
+                            <a href="{{ path('sortie_join', {'id': sortie.id}) }}">S'inscrire </a>
+                        {% endif %}
                     </td>
+
+                        {# <a href="{{ path('', {'id': }) }}">Annuler</a> #}
+                    {# TO DO #}
+                    {#                        {% if app.user.id == %}#}
+                    {#                        <a href="{{ path('', {'id': }) }}">Se désister</a> #}
+                    {#                        {% endif %}#}
+
+
             </tr>
         {% else %}
             <tr>

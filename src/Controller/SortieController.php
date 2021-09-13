@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Etat;
+use App\Entity\Inscription;
+use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Entity\Lieu;
 use App\Entity\Ville;
@@ -15,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -26,6 +29,12 @@ use Symfony\Component\Serializer\Serializer;
  */
 class SortieController extends AbstractController
 {
+    private Security $security;
+
+    public function __construct(Security $security)
+    {
+        $this->security = $security;
+    }
     /**
      * @Route("/", name="sortie_index", methods={"GET"})
      */
@@ -87,6 +96,26 @@ class SortieController extends AbstractController
         return $this->render('sortie/show.html.twig', [
             'sortie' => $sortie,
         ]);
+    }
+
+    /**
+     * @Route("/{id}/join", name="sortie_join", methods={"GET"})
+     */
+    public function join(Sortie $sortie): Response
+    {
+
+            $repo = $this->getDoctrine()->getRepository(Participant::class);
+            $id = $this->security->getUser()->getId();
+            $participant = $repo->findOneBy(array('id' => $id));
+            $inscription = new Inscription();
+            $inscription->setDateInscription(new \DateTime("now"));
+            $inscription->setSortie($sortie);
+            $inscription->setParticipant($participant);
+//            dd($inscription);
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($inscription);
+            $entityManager->flush();
+        return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
     }
 
     /**

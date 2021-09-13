@@ -53,6 +53,7 @@
     <a href="{{ path('sortie_index') }}">back to list</a>
 
     <a href="{{ path('sortie_edit', {'id': sortie.id}) }}">edit</a>
-
+{% if (sortie.dateDebut | date("U") > "now"|date("U")) and (sortie.etat.libelle != "Supprimée") %}
     {{ include('sortie/_delete_form.html.twig') }}
+    {% endif %}
 {% endblock %}

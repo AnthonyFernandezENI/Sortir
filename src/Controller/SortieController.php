@@ -145,8 +145,12 @@ class SortieController extends AbstractController
     public function delete(Request $request, Sortie $sortie): Response
     {
         if ($this->isCsrfTokenValid('delete'.$sortie->getId(), $request->request->get('_token'))) {
+            $repo = $this->getDoctrine()->getRepository(Etat::class);
+            $etatSuppr = $repo->findOneBy(array('libelle' => 'Supprimée'));
+
+            $sortie->setEtat($etatSuppr);
             $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->remove($sortie);
+//            $entityManager->remove($sortie);
             $entityManager->flush();
         }
 

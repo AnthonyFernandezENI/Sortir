@@ -70,6 +70,9 @@ class SortieController extends AbstractController
         $repo2 = $this->getDoctrine()->getRepository(Participant::class);
         $participant = $repo2->findBy(array('id' => $this->getUser()->getId()));
 
+        $repoEtat = $this->getDoctrine()->getRepository(Etat::class);
+        $etat = $repoEtat->findOneBy(array('libelle' => 'Créée'));
+
         $encoders = [new XmlEncoder(), new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];
 
@@ -78,7 +81,6 @@ class SortieController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $lieuSortie = new Lieu();
-            $etat = new Etat();
             $participantOrga = new Participant();
             foreach ($participant as $key => $participantConnecte) {
                 $participantOrga = $participantConnecte;
@@ -97,15 +99,11 @@ class SortieController extends AbstractController
                     }
                 }
             }
-            $etat->setId(1);
-            $etat->setLibelle('Créée');
             $sortie->setEtat($etat);
             $sortie->setLieu($lieuSortie);
             $sortie->setOrganisateur($participantOrga);
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($sortie);
-            $entityManager->persist($etat);
-            $entityManager->persist($lieuSortie);
             $entityManager->flush();
             $this->addFlash("message","Votre sortie est bien créée !");
 
@@ -170,8 +168,17 @@ class SortieController extends AbstractController
      */
     public function edit(Request $request, Sortie $sortie): Response
     {
+        $encoders = [new XmlEncoder(), new JsonEncoder()];
+        $normalizers = [new ObjectNormalizer()];
+
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
+
+        $repo = $this->getDoctrine()->getRepository(Lieu::class);
+        $lieu = $repo->findAllPlaces();
+
+        $serializer = new Serializer($normalizers, $encoders);
+        $infosLieu = $serializer->serialize($lieu, 'json');
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
@@ -182,6 +189,8 @@ class SortieController extends AbstractController
         return $this->renderForm('sortie/edit.html.twig', [
             'sortie' => $sortie,
             'form' => $form,
+            'lieux' => $lieu,
+            'infosLieu' => $infosLieu,
         ]);
     }
 
@@ -193,7 +202,7 @@ class SortieController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$sortie->getId(), $request->request->get('_token'))) {
             $repo = $this->getDoctrine()->getRepository(Etat::class);
             $etatSuppr = $repo->findOneBy(array('libelle' => 'Supprimée'));
-
+//            dd($etatSuppr);
             $sortie->setEtat($etatSuppr);
             $entityManager = $this->getDoctrine()->getManager();
 //            $entityManager->remove($sortie);

@@ -1,7 +1,7 @@
 {{ form_start(form) }}
     {{ form_widget(form) }}
 <select name="places_to_go" id="places_to_go">
-    <option value="" selected="selected" disabled>- Choisissez un lieu -</option>
+    {# <option value="" selected="selected" disabled>- Choisissez un lieu -</option> #}
     {% for lieu in lieux %}
         <option>{{ lieu.nom }}</option>
     {% endfor %}
@@ -13,26 +13,5 @@
 <label id="villeNom"></label>
 <label id="villeCodePostal"></label>
 <input type="hidden" value="{{ infosLieu }}" id="hidden-degeu">
-<script>
-    document.getElementById('places_to_go').addEventListener("click", () => {
-        // console.log(document.getElementById('places_to_go').value);
-        choix = document.getElementById('places_to_go').value;
-        lieux = document.getElementById('hidden-degeu').value;
-        lieuxObj = JSON.parse(lieux);
-        for (i = 0; i < lieuxObj.length; i++){
-            if(lieuxObj[i].nom == choix){
-                trouver = lieuxObj[i];
-            }
-        }
-        if(trouver){
-            document.getElementById("nom").innerText = trouver.nom;
-            document.getElementById("rue").innerText = trouver.rue;
-            document.getElementById("longitude").innerText = trouver.longitude;
-            document.getElementById("latitude").innerText = trouver.latitude;
-            document.getElementById("villeNom").innerText = trouver.ville.nom;
-            document.getElementById("villeCodePostal").innerText = trouver.ville.codePostal;
-        }
-    });
-</script>
-<button class="btn">{{ button_label|default('Save') }}</button>
+<button class="button">{{ button_label|default('Save') }}</button>
 {{ form_end(form.nom) }}

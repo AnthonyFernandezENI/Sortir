@@ -3,7 +3,6 @@
 {% block title %}Sorties{% endblock %}
 
 {% block body %}
-
 <div class="grid-container">
     <div class="medium-6 cell small-3 medium-4 large-5">
         {% for label, messages in app.flashes %}
@@ -65,19 +64,18 @@
         </div>
         </form>
 
-        <div class="row collapse date" id="dpMonths" style="max-width:200px;">
-            <div class="small-2 columns">
-            </div>
-            <label>Entre </label>
-            <div class="small-10 columns">
-                <input size="16" type="datetime-local">
-            </div>
-            <label>Et </label>
-            <div class="small-10 columns">
-                <input size="16" type="date" id="end" name="end-date">
-            </div>
+    <div class="row collapse date" id="dpMonths" style="max-width:200px;">
+        <div class="small-2 columns">
         </div>
-
+        <label>Entre </label>
+        <div class="small-10 columns">
+            <input size="16" type="datetime-local">
+        </div>
+        <label>Et </label>
+        <div class="small-10 columns">
+            <input size="16" type="date" id="end" name="end-date">
+        </div>
+    </div>
         <div class="grid-container">
             <div class="grid-x grid-padding-x">
                 <table class="table">

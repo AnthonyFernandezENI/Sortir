@@ -1,62 +1,35 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Participant{% endblock %}
+{% block title %}
+    {% if app.user.id == participant.id %}
+        Sortir.com - Mon profil
+    {% else %}
+        Sortir.com - Profil de {{ participant.pseudo }}
+    {% endif %}
+{% endblock %}
 
 {% block body %}
-    <h1>Participant</h1>
-
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ participant.id }}</td>
-            </tr>
-            <tr>
-                <th>Pseudo</th>
-                <td>{{ participant.pseudo }}</td>
-            </tr>
-            <tr>
-                <th>Roles</th>
-                <td>{{ participant.roles ? participant.roles|json_encode : '' }}</td>
-            </tr>
-            <tr>
-                <th>Password</th>
-                <td>{{ participant.password }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ participant.nom }}</td>
-            </tr>
-            <tr>
-                <th>Prenom</th>
-                <td>{{ participant.prenom }}</td>
-            </tr>
-            <tr>
-                <th>Telephone</th>
-                <td>{{ participant.telephone }}</td>
-            </tr>
-            <tr>
-                <th>Mail</th>
-                <td>{{ participant.mail }}</td>
-            </tr>
-            <tr>
-                <th>Site</th>
-                <td>{{ participant.site.nom }}</td>
-            </tr>
-            <tr>
-                <th>Administrateur</th>
-                <td>{{ participant.administrateur ? 'Yes' : 'No' }}</td>
-            </tr>
-            <tr>
-                <th>Actif</th>
-                <td>{{ participant.actif ? 'Yes' : 'No' }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <a href="{{ path('profil_index') }}">back to list</a>
-
-    <a href="{{ path('profil_edit', {'id': participant.id}) }}">edit</a>
-
-    {{ include('profil/_delete_form.html.twig') }}
+    {% if app.user.id == participant.id %}
+        <h1>Mon profil</h1>
+    {% else %}
+        <h1>{{ participant.pseudo }}</h1>
+    {% endif %}
+    <b>Prénom :</b>{{ participant.prenom }}<br>
+    <b>Nom :</b> {{ participant.nom }}<br>
+    <b>Telephone :</b> {{ participant.telephone }}<br>
+    <b>Email :</b> {{ participant.mail }}<br>
+    <b>Ville de rattachement :</b> {{ participant.site.nom }}<br>
+    {% if app.user.administrateur %}
+        {{ include('profil/_delete_form.html.twig') }}
+        {% if participant.actif %}
+            {{ include('profil/_disable_form.html.twig') }}
+        {% else %}
+            {{ include('profil/_enable_form.html.twig') }}
+        {% endif %}
+    {% endif %}
+    {% if app.user.id == participant.id %}
+        <button class="button"><a class="white-font"
+                                  href="{{ path('profil_edit', {'id': participant.id}) }}">Modifier</a></button>
+    {% endif %}
+    <button class="button"><a class="white-font" href="{{ path('sortie_index') }}">Retour</a></button>
 {% endblock %}

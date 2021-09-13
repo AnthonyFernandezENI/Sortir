@@ -1,0 +1,4 @@
+<form method="post" action="{{ path('profil_enable', {'id': participant.id}) }}" onsubmit="return confirm('Are you sure you want to enable this item?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('enable' ~ participant.id) }}">
+    <button class="button">Activer le compte</button>
+</form>

@@ -36,6 +36,8 @@ class ProfilController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $participant->setAdministrateur(false);
+            $participant->setActif(true);
             $participant->setPassword(
 
                     $passwordEncoder->encodePassword(
@@ -69,12 +71,19 @@ class ProfilController extends AbstractController
     /**
      * @Route("/{id}/edit", name="profil_edit", methods={"GET","POST"})
      */
-    public function edit(Request $request, Participant $participant): Response
+    public function edit(Request $request, UserPasswordEncoderInterface $passwordEncoder, Participant $participant): Response
     {
         $form = $this->createForm(ParticipantType::class, $participant);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $participant->setPassword(
+
+                $passwordEncoder->encodePassword(
+                    $participant,
+                    $form->get('password')->getData()
+                )
+            );
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute('profil_index', [], Response::HTTP_SEE_OTHER);
@@ -99,4 +108,36 @@ class ProfilController extends AbstractController
 
         return $this->redirectToRoute('profil_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    /**
+     * @Route("/disable/{id}", name="profil_disable", methods={"POST"})
+     */
+    public function disable(Request $request, Participant $participant): Response
+    {
+
+        if ($this->isCsrfTokenValid('disable'.$participant->getId(), $request->request->get('_token'))) {
+            $participant->setActif(false);
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('profil_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    /**
+     * @Route("/enable/{id}", name="profil_enable", methods={"POST"})
+     */
+    public function enable(Request $request, Participant $participant): Response
+    {
+
+        if ($this->isCsrfTokenValid('enable'.$participant->getId(), $request->request->get('_token'))) {
+            $participant->setActif(true);
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('profil_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+
 }

@@ -1,4 +1,29 @@
 {{ form_start(form) }}
     {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
+<select name="places_to_go" id="places_to_go">
+    {% for lieu in lieux %}
+        <option>{{ lieu.nom }}</option>
+    {% endfor %}
+</select>
+<p id="affichage"></p>
+<input type="hidden" value="{{ infosLieu }}" id="hidden-degeu">
+<script>
+    document.getElementById('places_to_go').addEventListener("click", () => {
+        // console.log(document.getElementById('places_to_go').value);
+        choix = document.getElementById('places_to_go').value;
+        lieux = document.getElementById('hidden-degeu').value;
+        lieuxObj = JSON.parse(lieux);
+        for (i = 0; i < lieuxObj.length; i++){
+            if(lieuxObj[i].nom == choix){
+                trouver = lieuxObj[i];
+            }
+        }
+        if(trouver){
+            document.getElementById("affichage").innerText =
+                trouver.nom + " " + trouver.rue + " " + trouver.longitude + " " + trouver.latitude
+            ;
+        }
+    });
+</script>
+<button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_end(form.nom) }}

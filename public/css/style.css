@@ -1,0 +1,37 @@
+body{
+    background:#ffbf85;
+}
+.disabled
+{
+    pointer-events: none;
+
+    /* for "disabled" effect */
+    opacity: 0.7;
+    padding: 0em;
+    margin: 0em;
+}
+
+.title-bar{
+    background:#00407a;
+}
+
+.white-font{
+    color: white;
+}
+
+a:hover{
+    color:#00407a;
+}
+
+a:active{
+    color: #00407a;
+}
+
+a:focus{
+    color: #ffbf85;
+}
+
+li:hover{
+    background:#ffffff;
+    border-radius: 1em;
+}

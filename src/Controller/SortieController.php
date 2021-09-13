@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Etat;
+use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Entity\Lieu;
 use App\Entity\Ville;
@@ -10,6 +12,8 @@ use App\Form\SortieType;
 use App\Form\VilleType;
 use App\Repository\LieuRepository;
 use App\Repository\SortieRepository;
+use Couchbase\Document;
+use http\Client\Curl\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -45,25 +49,52 @@ class SortieController extends AbstractController
     public function new(Request $request): Response
     {
         $sortie = new Sortie();
-        $lieu = new Lieu();
-        $ville = new Ville();
+        $participant = new Participant();
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
 
         $repo = $this->getDoctrine()->getRepository(Lieu::class);
         $lieu = $repo->findAllPlaces();
-//        dd($lieu);
+
+        $repo2 = $this->getDoctrine()->getRepository(Participant::class);
+        $participant = $repo2->findBy(array('id' => $this->getUser()->getId()));
+
         $encoders = [new XmlEncoder(), new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];
 
         $serializer = new Serializer($normalizers, $encoders);
         $infosLieu = $serializer->serialize($lieu, 'json');
 
-
         if ($form->isSubmitted() && $form->isValid()) {
+            $lieuSortie = new Lieu();
+            $etat = new Etat();
+            $participantOrga = new Participant();
+            foreach ($participant as $key => $participantConnecte) {
+                $participantOrga = $participantConnecte;
+            }
+//            dd($participantOrga);
 
+            if(isset($_POST['places_to_go'])){
+                $choixSelect = $_POST['places_to_go'];
+                foreach ($lieu as $key => $value) {
+                    if($key == $choixSelect){
+                        $place = $repo->findBy(array('id'=>$value->getId()));
+                        foreach ($place as $key2 => $value2) {
+                            $lieuSortie = $value;
+                        }
+                        break;
+                    }
+                }
+            }
+            $etat->setId(1);
+            $etat->setLibelle('Créée');
+            $sortie->setEtat($etat);
+            $sortie->setLieu($lieuSortie);
+            $sortie->setOrganisateur($participantOrga);
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($sortie);
+            $entityManager->persist($etat);
+            $entityManager->persist($lieuSortie);
             $entityManager->flush();
             $this->addFlash("message","Votre sortie est bien créée !");
 

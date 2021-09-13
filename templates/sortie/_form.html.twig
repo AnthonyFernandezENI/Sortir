@@ -1,12 +1,17 @@
 {{ form_start(form) }}
     {{ form_widget(form) }}
 <select name="places_to_go" id="places_to_go">
-    <option selected="selected" disabled>- Choisissez un lieu -</option>
+    <option value="" selected="selected" disabled>- Choisissez un lieu -</option>
     {% for lieu in lieux %}
         <option>{{ lieu.nom }}</option>
     {% endfor %}
 </select>
-<p id="affichage"></p>
+<label id="nom"></label>
+<label id="rue"></label>
+<label id="longitude"></label>
+<label id="latitude"></label>
+<label id="villeNom"></label>
+<label id="villeCodePostal"></label>
 <input type="hidden" value="{{ infosLieu }}" id="hidden-degeu">
 <script>
     document.getElementById('places_to_go').addEventListener("click", () => {
@@ -20,9 +25,12 @@
             }
         }
         if(trouver){
-            document.getElementById("affichage").innerText =
-                trouver.nom + " " + trouver.rue + " " + trouver.longitude + " " + trouver.latitude + " " + trouver.ville.nom + " " + trouver.ville.codePostal
-            ;
+            document.getElementById("nom").innerText = trouver.nom;
+            document.getElementById("rue").innerText = trouver.rue;
+            document.getElementById("longitude").innerText = trouver.longitude;
+            document.getElementById("latitude").innerText = trouver.latitude;
+            document.getElementById("villeNom").innerText = trouver.ville.nom;
+            document.getElementById("villeCodePostal").innerText = trouver.ville.codePostal;
         }
     });
 </script>

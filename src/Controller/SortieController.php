@@ -147,6 +147,21 @@ class SortieController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($inscription);
             $entityManager->flush();
+            $this->addFlash("success","Votre inscription a été prise en compte");
+        return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    /**
+     * @Route("/{id}/quit", name="sortie_quit", methods={"GET"})
+     */
+    public function quit(Inscription $inscriptionId): Response
+    {
+        $repo = $this->getDoctrine()->getRepository(Inscription::class);
+        $inscription = $repo->find($inscriptionId);
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->remove($inscription);
+        $entityManager->flush();
+        $this->addFlash("success","Votre désinscription a été prise en compte");
         return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
     }
 

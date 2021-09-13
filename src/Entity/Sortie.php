@@ -65,6 +65,12 @@ class Sortie
     private $organisateur;
 
     /**
+     * @ORM\OneToMany(targetEntity=Inscription::class, mappedBy="sortie", orphanRemoval=true)
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $inscriptions;
+
+    /**
      * @ORM\ManyToOne(targetEntity=Lieu::class)
      * @ORM\JoinColumn(nullable=false)
      */
@@ -187,6 +193,22 @@ class Sortie
         $this->organisateur = $organisateur;
 
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getInscriptions()
+    {
+        return $this->inscriptions;
+    }
+
+    /**
+     * @param mixed $inscriptions
+     */
+    public function setInscriptions($inscriptions): void
+    {
+        $this->inscriptions = $inscriptions;
     }
 
     public function getLieu(): ?Lieu

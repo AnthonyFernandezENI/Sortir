@@ -3,9 +3,11 @@
 namespace App\Form;
 
 use App\Entity\Sortie;
+use Doctrine\DBAL\Types\DateTimeImmutableType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -24,8 +26,13 @@ class SortieType extends AbstractType
     {
         $builder
             ->add('nom',TextType::class, ['label'=>"Nom de la sortie :"])
-            ->add('dateDebut', DateType::class, ['label'=>"Date et heure de la sortie :",'widget' => 'single_text'])
-            ->add('dateCloture', DateType::class, ['label'=>"Date limite d'inscription :",'widget' => 'single_text'])
+            ->add('dateDebut', DateType::class, array(
+                "widget" => 'single_text',
+                "format" => 'yyyy-MM-dd',
+                "data" => new \DateTime()
+            ))
+            //->add('dateDebut', DateTimeImmutableType::class, ['label'=>"Date et heure de la sortie :",'widget' => 'single_text'])
+            ->add('dateCloture', DateType::class, ['label'=>"Date limite d'inscription :", "data" => new \DateTime() , 'widget' => 'single_text'])
             ->add('nbInscriptionsMax',NumberType::class, ['label'=>"Nombre de place :"])
             ->add('duree',NumberType::class, ['label'=>"Durée (en minutes) :"])
             ->add('description',TextareaType::class, ['label'=>"Description et infos :"])

@@ -7,53 +7,53 @@
 
     <table class="table">
         <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ sortie.id }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ sortie.nom }}</td>
-            </tr>
-            <tr>
-                <th>DateDebut</th>
-                <td>{{ sortie.dateDebut ? sortie.dateDebut|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Duree</th>
-                <td>{{ sortie.duree }}</td>
-            </tr>
-            <tr>
-                <th>DateCloture</th>
-                <td>{{ sortie.dateCloture ? sortie.dateCloture|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>NbInscriptionsMax</th>
-                <td>{{ sortie.nbInscriptionsMax }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ sortie.description }}</td>
-            </tr>
-            <tr>
-                <th>Organisateur</th>
-                <td>{{ sortie.organisateur.pseudo }}</td>
-            </tr>
-            <tr>
-                <th>Lieu</th>
-                <td>{{ sortie.lieu.nom }} {{ sortie.lieu.rue }} {{ sortie.lieu.ville.codePostal }} {{ sortie.lieu.ville.nom }}</td>
-            </tr>
-            <tr>
-                <th>UrlPhoto</th>
-                <td>{{ sortie.urlPhoto }}</td>
-            </tr>
+        <tr>
+            <th>Id</th>
+            <td>{{ sortie.id }}</td>
+        </tr>
+        <tr>
+            <th>Nom</th>
+            <td>{{ sortie.nom }}</td>
+        </tr>
+        <tr>
+            <th>DateDebut</th>
+            <td>{{ sortie.dateDebut ? sortie.dateDebut|date('Y-m-d H:i:s') : '' }}</td>
+        </tr>
+        <tr>
+            <th>Duree</th>
+            <td>{{ sortie.duree }}</td>
+        </tr>
+        <tr>
+            <th>DateCloture</th>
+            <td>{{ sortie.dateCloture ? sortie.dateCloture|date('Y-m-d H:i:s') : '' }}</td>
+        </tr>
+        <tr>
+            <th>NbInscriptionsMax</th>
+            <td>{{ sortie.nbInscriptionsMax }}</td>
+        </tr>
+        <tr>
+            <th>Description</th>
+            <td>{{ sortie.description }}</td>
+        </tr>
+        <tr>
+            <th>Organisateur</th>
+            <td>{{ sortie.organisateur.pseudo }}</td>
+        </tr>
+        <tr>
+            <th>Lieu</th>
+            <td>{{ sortie.lieu.nom }} {{ sortie.lieu.rue }} {{ sortie.lieu.ville.codePostal }} {{ sortie.lieu.ville.nom }}</td>
+        </tr>
+        <tr>
+            <th>UrlPhoto</th>
+            <td>{{ sortie.urlPhoto }}</td>
+        </tr>
         </tbody>
     </table>
 
     <a class="button" href="{{ path('sortie_index') }}">back to list</a>
 
     <a class="button" href="{{ path('sortie_edit', {'id': sortie.id}) }}">edit</a>
-{% if (sortie.dateDebut | date("U") > "now"|date("U")) and (sortie.etat.libelle != "Supprimée") %}
-    {{ include('sortie/_delete_form.html.twig') }}
+    {% if (sortie.dateDebut | date("U") > "now"|date("U")) and (sortie.etat.libelle != "Supprimée") %}
+        {{ include('sortie/_delete_form.html.twig') }}
     {% endif %}
 {% endblock %}

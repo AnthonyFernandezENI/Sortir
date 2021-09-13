@@ -1,7 +1,7 @@
 {{ form_start(form) }}
     {{ form_widget(form) }}
 <select name="places_to_go" id="places_to_go">
-{#    <option value="" selected="selected" disabled>- Choisissez un lieu -</option>#}
+    {# <option value="" selected="selected" disabled>- Choisissez un lieu -</option> #}
     {% for lieu in lieux %}
         <option>{{ lieu.nom }}</option>
     {% endfor %}

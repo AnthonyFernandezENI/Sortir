@@ -12,7 +12,7 @@
     <div class=" grid-container-fluid float-right ">
         <div class="medium-6 cell small-3 medium-4 large-5">
             Date du jour : {{ "now"| date ("d/m/Y") }}</div> </div> <br>
-            
+
     <div class="grid-container-fluid float-right">
         <div class="medium-6 cell small-3 medium-4 large-5">
             Participant : {{ app.user.prenom }}</div> </div>
@@ -21,28 +21,7 @@
     <div class="grid-container">
         <h5>Filtrer les sorties</h5>
 
-
-    {# {{ form_start(form) }} #}
-    {# {{ form_label(formSortie.nom,'Nom de la sortie',{'label_attr':{'class':'form-label'}}) }} #}
-    {# {{ form_widget(formSortie.sortie,{'attr':{'class':'form-control'}}) }} #}
-    {# #}
-    {# {{ form_end(form) }} #}
-
-{#        {% for label,messages in app.flashes %}#}
-{#            {% for message in messages %}#}
-{#                {{message}}#}
-{#            {% endfor %}#}
-{#        {% endfor %}#}
-
-{#        {% for wish in wishes %}#}
-{#            <tr>#}
-{#                <th scope="row">{{wish.id}} </th>#}
-{#                <td> <a href="{{path("app_wish_detail",{'id':wish.id})}}"><b>{{wish.title}}</b> </a></td>#}
-{#                <td>{{ wish.category.name }}</td>#}
-{#            </tr>#}
-{#        {% endfor %}#}
-
-        <form>
+        <form action="" method="post">
         <div class="grid-container-fluid">
             <div class="grid-x grid-padding-x">
                 <div class="medium-6 cell small-3 medium-4 large-5">
@@ -75,9 +54,8 @@
     </div>
     </form>
 
-        <div class="row collapse date" id="dpMonths" data-date-format="mm/yyyy" data-start-view="year" data-min-view="year" style="max-width:200px;">
+        <div class="row collapse date" id="dpMonths" style="max-width:200px;">
             <div class="small-2 columns">
-                <span class="prefix"><i class="fa fa-calendar"></i></span>
             </div>
             <label>Entre </label>
             <div class="small-10 columns">
@@ -85,17 +63,11 @@
             </div>
             <label>Et </label>
             <div class="small-10 columns">
-                <input size="16" type="datetime-local">
+                <input size="16" type="date" id="end" name="end-date">
             </div>
         </div>
-        <script>
-            $(function(){
-                $('#dpMonths').fdatepicker();
-            });
-        </script>
 
-
-    <div class="grid-container">
+        <div class="grid-container">
         <div class="grid-x grid-padding-x">
             <table class="table">
                 <thead>
@@ -118,21 +90,27 @@
                     <td>{{ sortie.nom }}</td>
                     <td>{{ sortie.dateDebut ? sortie.dateDebut|date('Y-m-d H:i:s') : '' }}</td>
                     <td>{{ sortie.dateCloture ? sortie.dateCloture|date('Y-m-d H:i:s') : '' }}</td>
-                    <td>{{ sortie.nbInscriptionsMax }}</td>
+                    <td> {#  Nombre inscrits /#} {{ sortie.nbInscriptionsMax }}</td>
                     <td>{{ sortie.etat.libelle }}</td>
 
-                    <td> Inscription</td>
-                    {# {% if app.user %} #}
-                    {# <p> {{ app.user.sortie.inscription }} ? 'X' : '' </p> #}
-                    {# {% endif %} </td> #}
+                    {# TO DO #}
+                    <td> <div style="text-align: center;"> {{ app.user.pseudo ? 'x' : ''}} </div> </td>  TO DO
 
-{#                    <td> Organisateur</td> <td>{{ organisateur.getNom}} </td>#}
+                    <td>{{ sortie.organisateur.prenom}} {{ sortie.organisateur.nom}} </td>
 
                     <td>
-                        <a href="{{ path('sortie_show', {'id': sortie.id}) }}">Afficher</a>
+                        <a href="{{ path('sortie_show', {'id': sortie.id}) }}">Afficher</a> <br>
+
+                        {% if app.user.id == sortie.organisateur.id %}
                         <a href="{{ path('sortie_edit', {'id': sortie.id}) }}">Modifier</a>
-                        {# <a href="{{ path('', {'id': }) }}">Se désister</a> #}
+                        {% endif %}
+
+                        {# TO DO #}
+{#                        {% if app.user.id == %}#}
+{#                        <a href="{{ path('', {'id': }) }}">Se désister</a> #}
+{#                        {% endif %}#}
                         {# <a href="{{ path('', {'id': }) }}">S'inscrire</a> #}
+                        {# <a href="{{ path('', {'id': }) }}">Annuler</a> #}
                     </td>
             </tr>
         {% else %}

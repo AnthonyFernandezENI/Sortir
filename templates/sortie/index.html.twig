@@ -109,9 +109,13 @@
 {#                        {% if app.user.id == %}#}
 {#                        <a href="{{ path('', {'id': }) }}">Se désister</a> #}
 {#                        {% endif %}#}
-                        {# <a href="{{ path('', {'id': }) }}">S'inscrire</a> #}
+                       {% if (sortie.dateDebut | date("U") > "now"|date("U")) and (sortie.etat.libelle == "Ouverte") %}
+                  
+                         <a href="{{ path('sortie_join', {'id': sortie.id}) }}">S'inscrire</a>
+                    {% endif %}
                         {# <a href="{{ path('', {'id': }) }}">Annuler</a> #}
                     </td>
+
             </tr>
         {% else %}
             <tr>

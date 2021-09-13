@@ -147,17 +147,23 @@ class Sortie
         return $this;
     }
 
-    public function getEtat(): ?Etat
+    /**
+     * @return mixed
+     */
+    public function getEtat()
     {
         return $this->etat;
     }
 
-    public function setEtat(?Etat $etat): self
+    /**
+     * @param mixed $etat
+     */
+    public function setEtat($etat): void
     {
         $this->etat = $etat;
-
-        return $this;
     }
+
+
 
     public function getUrlPhoto(): ?string
     {

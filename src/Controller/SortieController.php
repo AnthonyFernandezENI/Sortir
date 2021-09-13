@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Etat;
+use App\Entity\Inscription;
+use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Entity\Lieu;
 use App\Entity\Ville;
@@ -11,10 +14,13 @@ use App\Form\VilleType;
 use App\Repository\LieuRepository;
 use App\Repository\SiteRepository;
 use App\Repository\SortieRepository;
+use Couchbase\Document;
+use http\Client\Curl\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -26,6 +32,12 @@ use Symfony\Component\Serializer\Serializer;
  */
 class SortieController extends AbstractController
 {
+    private Security $security;
+
+    public function __construct(Security $security)
+    {
+        $this->security = $security;
+    }
     /**
      * @Route("/", name="sortie_index", methods={"GET"})
      */
@@ -48,25 +60,52 @@ class SortieController extends AbstractController
     public function new(Request $request): Response
     {
         $sortie = new Sortie();
-        $lieu = new Lieu();
-        $ville = new Ville();
+        $participant = new Participant();
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
 
         $repo = $this->getDoctrine()->getRepository(Lieu::class);
         $lieu = $repo->findAllPlaces();
-//        dd($lieu);
+
+        $repo2 = $this->getDoctrine()->getRepository(Participant::class);
+        $participant = $repo2->findBy(array('id' => $this->getUser()->getId()));
+
         $encoders = [new XmlEncoder(), new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];
 
         $serializer = new Serializer($normalizers, $encoders);
         $infosLieu = $serializer->serialize($lieu, 'json');
 
-
         if ($form->isSubmitted() && $form->isValid()) {
+            $lieuSortie = new Lieu();
+            $etat = new Etat();
+            $participantOrga = new Participant();
+            foreach ($participant as $key => $participantConnecte) {
+                $participantOrga = $participantConnecte;
+            }
+//            dd($participantOrga);
 
+            if(isset($_POST['places_to_go'])){
+                $choixSelect = $_POST['places_to_go'];
+                foreach ($lieu as $key => $value) {
+                    if($key == $choixSelect){
+                        $place = $repo->findBy(array('id'=>$value->getId()));
+                        foreach ($place as $key2 => $value2) {
+                            $lieuSortie = $value;
+                        }
+                        break;
+                    }
+                }
+            }
+            $etat->setId(1);
+            $etat->setLibelle('Créée');
+            $sortie->setEtat($etat);
+            $sortie->setLieu($lieuSortie);
+            $sortie->setOrganisateur($participantOrga);
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($sortie);
+            $entityManager->persist($etat);
+            $entityManager->persist($lieuSortie);
             $entityManager->flush();
             $this->addFlash("message","Votre sortie est bien créée !");
 
@@ -89,6 +128,26 @@ class SortieController extends AbstractController
         return $this->render('sortie/show.html.twig', [
             'sortie' => $sortie,
         ]);
+    }
+
+    /**
+     * @Route("/{id}/join", name="sortie_join", methods={"GET"})
+     */
+    public function join(Sortie $sortie): Response
+    {
+
+            $repo = $this->getDoctrine()->getRepository(Participant::class);
+            $id = $this->security->getUser()->getId();
+            $participant = $repo->findOneBy(array('id' => $id));
+            $inscription = new Inscription();
+            $inscription->setDateInscription(new \DateTime("now"));
+            $inscription->setSortie($sortie);
+            $inscription->setParticipant($participant);
+//            dd($inscription);
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($inscription);
+            $entityManager->flush();
+        return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
     }
 
     /**
@@ -117,8 +176,12 @@ class SortieController extends AbstractController
     public function delete(Request $request, Sortie $sortie): Response
     {
         if ($this->isCsrfTokenValid('delete'.$sortie->getId(), $request->request->get('_token'))) {
+            $repo = $this->getDoctrine()->getRepository(Etat::class);
+            $etatSuppr = $repo->findOneBy(array('libelle' => 'Supprimée'));
+
+            $sortie->setEtat($etatSuppr);
             $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->remove($sortie);
+//            $entityManager->remove($sortie);
             $entityManager->flush();
         }
 

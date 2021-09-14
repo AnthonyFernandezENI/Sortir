@@ -76,6 +76,11 @@ class Sortie
      */
     private $lieu;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $motifAnnulation;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -219,6 +224,18 @@ class Sortie
     public function setLieu(?Lieu $lieu): self
     {
         $this->lieu = $lieu;
+
+        return $this;
+    }
+
+    public function getMotifAnnulation(): ?string
+    {
+        return $this->motifAnnulation;
+    }
+
+    public function setMotifAnnulation(?string $motifAnnulation): self
+    {
+        $this->motifAnnulation = $motifAnnulation;
 
         return $this;
     }

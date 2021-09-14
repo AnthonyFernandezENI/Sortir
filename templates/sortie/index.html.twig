@@ -3,82 +3,89 @@
 {% block title %}Sorties{% endblock %}
 
 {% block body %}
-
     <div class="grid-container">
-    <div class="medium-6 cell small-3 medium-4 large-5">
-        {% for label, messages in app.flashes %}
-            {% for message in messages %}
-                <div class="callout {{ label }}">
-                    {{ message }}
-                </div>
+        <div class="medium-6 cell small-3 medium-4 large-5">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="callout {{ label }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
             {% endfor %}
-        {% endfor %}
-        <h1>Sorties</h1>
+            <h1>Sorties</h1>
 
 
-        <div class=" grid-container-fluid float-right ">
-            <div class="medium-6 cell small-3 medium-4 large-5">
-                Date du jour : {{ "now"| date ("d/m/Y") }}</div>
-        </div>
-        <br>
-
-        <div class="grid-container-fluid float-right">
-            <div class="medium-6 cell small-3 medium-4 large-5">
-                Participant : {{ app.user.prenom }}</div>
-        </div>
-    </div>
-
-    <div class="grid-container">
-        <h5>Filtrer les sorties</h5>
-
-        <form action="" method="post">
-            <div class="grid-container-fluid">
-                <div class="grid-x grid-padding-x">
-                    <div class="medium-6 cell small-3 medium-4 large-5">
-                        <label>Sites </label>
-                        <select>
-                            <option>
-                                {% for site in sites %}
-                            <option value="{{ site.id }}">{{ site.nom }}</option>
-                            {% endfor %}
-                            </option>
-                        </select>
-                    </div>
-                    <div class="medium-6 cell small-3 medium-4 large-5">
-                        <label>Le nom de la sortie contient </label>
-                        <input type="search" placeholder="Rechercher">
-                        <button type="button" class="button">Rechercher</button>
-                    </div>
-                </div>
+            <div class=" grid-container-fluid float-right ">
+                <div class="medium-6 cell small-3 medium-4 large-5">
+                    Date du jour : {{ "now"| date ("d/m/Y") }}</div>
             </div>
-        </form>
+            <br>
+
+            <div class="grid-container-fluid float-right">
+                <div class="medium-6 cell small-3 medium-4 large-5">
+                    Participant : {{ app.user.prenom }}</div>
+            </div>
+        </div>
 
         <div class="grid-container">
-            <fieldset class="large-7 cell">
-                <input id="checkbox1" type="checkbox"><label for="checkbox1">Sorties dont je suis l'organisateur</label>
-                <input id="checkbox2" type="checkbox"><label for="checkbox2">Sorties auxquelles je suis
-                    inscrit/e</label>
-                <input id="checkbox3" type="checkbox"><label for="checkbox3">Sorties auxquelles je ne suis pas
-                    inscrit/e</label>
-                <input id="checkbox4" type="checkbox"><label for="checkbox3">Sorties passées</label>
-            </fieldset>
-        </div>
-        </form>
+            <h5>Filtrer les sorties</h5>
 
-        <div class="grid-x grid-margin-x" id="dpMonths" style="max-width:200px;">
+            <form action="" method="post">
+                <div class="grid-container-fluid">
+                    <div class="grid-x grid-padding-x">
+                        <div class="medium-6 cell small-3 medium-4 large-5">
+                            <label>Sites </label>
+                            <select>
+                                <option>
+                                    {% for site in sites %}
+                                <option value="{{ site.id }}">{{ site.nom }}</option>
+                                {% endfor %}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="medium-6 cell small-3 medium-4 large-5">
+                            <label>Le nom de la sortie contient </label>
+                            <input type="search" placeholder="Rechercher">
+                            <button type="button" class="button">Rechercher</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div class="grid-container">
+                <fieldset class="large-7 cell">
+                    <input id="checkbox1" type="checkbox"><label for="checkbox1">Sorties dont je suis
+                        l'organisateur</label>
+                    <input id="checkbox2" type="checkbox"><label for="checkbox2">Sorties auxquelles je suis
+                        inscrit/e</label>
+                    <input id="checkbox3" type="checkbox"><label for="checkbox3">Sorties auxquelles je ne suis pas
+                        inscrit/e</label>
+                    <input id="checkbox4" type="checkbox"><label for="checkbox3">Sorties passées</label>
+                </fieldset>
+            </div>
+            </form>
+            <div class="grid-x grid-margin-x" id="dpMonths" style="max-width:200px;">
 
 
-            <div class="cell small-6">
-                <label>Entre </label>
+                <div class="cell small-6">
+                    <label>Entre </label>
+                    <input size="16" type="datetime-local">
+                </div>
+
+                <div class="cell small-6">
+                    <label>Et </label>
+                    <input size="16" type="date" id="end" name="end-date">
+                </div>
+            </div>
+            <label>Entre </label>
+            <div class="small-10 columns">
                 <input size="16" type="datetime-local">
             </div>
-
-            <div class="cell small-6">
-                <label>Et </label>
+            <label>Et </label>
+            <div class="small-10 columns">
                 <input size="16" type="date" id="end" name="end-date">
             </div>
         </div>
-
         <div class="grid-container">
             <div class="grid-x grid-padding-x">
                 <table class="table">

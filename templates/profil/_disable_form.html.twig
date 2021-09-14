@@ -1,4 +1,5 @@
-<form method="post" action="{{ path('profil_disable', {'id': participant.id}) }}" onsubmit="return confirm('Are you sure you want to disable this item?');">
+<form method="post" action="{{ path('profil_disable', {'id': participant.id}) }}"
+      onsubmit="return confirm('Are you sure you want to disable this item?');">
     <input type="hidden" name="_token" value="{{ csrf_token('disable' ~ participant.id) }}">
     <button class="button">Désactiver le compte</button>
 </form>

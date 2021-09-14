@@ -36,7 +36,8 @@
                     <div class="grid-x grid-padding-x"> {# Si on lenlève, les champs "site" et "nom de la sortie contient" reviendront l'un en dessous de l'autre  #}
                         <div class="medium-6 cell small-3 medium-4 large-5">
                                <label>Sites </label>
-                            <select>
+                            <select id="select_site" name="select_site">
+                                <option value="-1" selected="selected"></option>
                                     {% for site in sites %}
                                 <option value="{{ site.id }}">{{ site.nom }}</option>
                                 {% endfor %}

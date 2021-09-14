@@ -10,18 +10,23 @@
         {{ include('sortie/_form.html.twig', {'button_label': 'Enregistrer'}) }}
         <div class="cell small-12">
             <div class="grid-x grid-margin-x">
-                <div class="cell small-4">
+                <div class="cell small-3">
                     {{ form_widget(form.creer) }}
                 </div>
-                <div class="cell small-4">
+                <div class="cell small-3">
                     {{ form_widget(form.publier) }}
                 </div>
-                <div class="cell small-4">
+                <div class="cell small-3">
+                    {{ form_end(form) }}
+                    {{ include('sortie/_delete_form.html.twig') }}
+                </div>
+                <div class="cell small-3">
                     <a class="white-font button" href="{{ path('sortie_index') }}">Annuler</a>
                 </div>
             </div>
         </div>
     </div>
-    {{ form_end(form) }}
+
     </div>
 {% endblock %}
+

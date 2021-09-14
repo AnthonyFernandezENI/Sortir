@@ -3,47 +3,25 @@
 {% block title %}Nouvelle sortie{% endblock %}
 
 {% block body %}
-    <h1>Créer une sortie</h1>
-    {{ include('sortie/_form.html.twig') }}
-
-    <a class="white-font button" href="{{ path('sortie_index') }}">Retour</a>
-
-    {# {{ form (form) }} #}
-    {# {{ form_start(form) }} #}
-
-
-    {# {{ form_label(formSortie.nom,'Nom de la sortie',{'label_attr':{'class':'form-label'}}) }} #}
-    {# {{ form_widget(formSortie.sortie,{'attr':{'class':'form-control'}}) }} #}
-    {# #}
-
-    {# {{form_label(formSortie.datedebut,'Date et heure de la sortie',{'label_attr':{'class':'form-label'}}) }} #}
-    {# {{ form_widget(formSortie.datedebut,{'attr':{'class':'form-control'}}) }} #}
-
-    {# #}
-    {# {{form_label(formSortie.duree,'Durée',{'label_attr':{'class':'form-label'}}) }} #}
-    {# {{ form_widget(formSortie.duree,{'attr':{'class':'form-control'}}) }} #}
-
-
-    {# {{form_label(formSortie.datecloture,'Date limite d"inscription',{'label_attr':{'class':'form-label'}}) }} #}
-    {# {{ form_widget(formSortie.datecloture,{'attr':{'class':'form-control'}}) }} #}
-
-
-    {# {{form_label(formSortie.nbinscriptionmax,'Nombre de place',{'label_attr':{'class':'form-label'}}) }} #}
-    {# {{ form_widget(formSortie.nbinscriptionmax,{'attr':{'class':'form-control'}}) }} #}
-
-
-
-    {# {{form_label(formSortie.datecloture,'Date limite d"inscription',{'label_attr':{'class':'form-label'}}) }} #}
-    {# {{ form_widget(formSortie.datecloture,{'attr':{'class':'form-control'}}) }} #}
-
-
-
-    {# {{form_label(formSortie.descriptioninfos,'Description et infos',{'label_attr':{'class':'form-label'}}) }} #}
-    {# {{ form_widget(formSortie.descriptioninfos,{'attr':{'class':'form-control'}}) }} #}
-
-
-    {# {{ form_widget(formSortie.Enregistrer, {'attr': {'class': 'btn btn-primary'}}) }} #}
-
-    {# {{ form_end(form) }} #}
-
+    <div class="grid-container">
+        <div class="grid-x grid-margin-x">
+            <h3 class="cell small-4 large-offset-4 title-centered">Créer une sortie</h3>
+        </div>
+        {{ include('sortie/_form.html.twig') }}
+        <div class="cell small-12">
+            <div class="grid-x grid-margin-x">
+                <div class="cell small-4">
+                    {{ form_widget(form.creer) }}
+                </div>
+                <div class="cell small-4">
+                    {{ form_widget(form.publier) }}
+                </div>
+                <div class="cell small-4">
+                    <a class="white-font button" href="{{ path('sortie_index') }}">Annuler</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ form_end(form) }}
+    </div>
 {% endblock %}

@@ -17,6 +17,7 @@ use App\Repository\LieuRepository;
 use App\Repository\SiteRepository;
 use App\Repository\SortieRepository;
 use Couchbase\Document;
+use DateTime;
 use http\Client\Curl\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -70,32 +71,29 @@ class SortieController extends AbstractController
     public function new(Request $request): Response
     {
         $sortie = new Sortie();
-        $participant = new Participant();
         $form = $this->createForm(SortieType::class, $sortie);
         $form->handleRequest($request);
 
+        $repo = $this->getDoctrine()->getRepository(Ville::class);
+        $villes = $repo->findAll();
         $repo = $this->getDoctrine()->getRepository(Lieu::class);
         $lieu = $repo->findAllPlaces();
 
-        $repo2 = $this->getDoctrine()->getRepository(Participant::class);
-        $participant = $repo2->findBy(array('id' => $this->getUser()->getId()));
-
         $repoEtat = $this->getDoctrine()->getRepository(Etat::class);
-        $etat = $repoEtat->findOneBy(array('libelle' => 'Créée'));
-
+        if (isset($_POST['sortie']['creer']))
+        {
+            $etat = $repoEtat->findOneBy(array('libelle' => 'Créée'));
+        }else{
+            $etat = $repoEtat->findOneBy(array('libelle' => 'Ouverte'));
+        }
         $encoders = [new XmlEncoder(), new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];
-
         $serializer = new Serializer($normalizers, $encoders);
         $infosLieu = $serializer->serialize($lieu, 'json');
         dd($infosLieu);
         if ($form->isSubmitted() && $form->isValid()) {
+
             $lieuSortie = new Lieu();
-            $participantOrga = new Participant();
-            foreach ($participant as $key => $participantConnecte) {
-                $participantOrga = $participantConnecte;
-            }
-//            dd($participantOrga);
 
             if(isset($_POST['places_to_go'])){
                 $choixSelect = $_POST['places_to_go'];
@@ -109,23 +107,108 @@ class SortieController extends AbstractController
                     }
                 }
             }
+
+            $inscription = new Inscription();
+            $inscription->setDateInscription(new DateTime("now"));
+            $inscription->setParticipant($this->security->getUser());
+            $inscription->setSortie($sortie);
+
             $sortie->setEtat($etat);
             $sortie->setLieu($lieuSortie);
-            $sortie->setOrganisateur($participantOrga);
+            $sortie->setOrganisateur($this->security->getUser());
+            $sortie->setSite($this->security->getUser()->getSite());
+
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($sortie);
+            $entityManager->persist($inscription);
             $entityManager->flush();
-            $this->addFlash("success","Votre sortie est bien créée !");
+            if (isset($_POST['sortie']['creer']))
+            {
+                $this->addFlash("success","Votre sortie est bien créée !");
+            }else{
+                $this->addFlash("success","Votre sortie est bien publiée !");
+            }
+
 
             return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('sortie/new.html.twig', [
             'sortie' => $sortie,
+            'villes' => $villes,
             'lieux' => $lieu,
             'infosLieu' => $infosLieu,
             'form' => $form,
         ]);
+    }
+
+    /**
+     * @Route("/{id}", name="sortie_show", methods={"GET"})
+     */
+    public function show(Sortie $sortie): Response
+    {
+        return $this->render('sortie/show.html.twig', [
+            'sortie' => $sortie,
+        ]);
+    }
+
+    /**
+     * @Route("/{id}/edit", name="sortie_edit", methods={"GET","POST"})
+     */
+    public function edit(Request $request, Sortie $sortie): Response
+    {
+        $encoders = [new XmlEncoder(), new JsonEncoder()];
+        $normalizers = [new ObjectNormalizer()];
+
+        $form = $this->createForm(SortieType::class, $sortie);
+        $form->handleRequest($request);
+
+        $repo = $this->getDoctrine()->getRepository(Ville::class);
+        $villes = $repo->findAll();
+        $repo = $this->getDoctrine()->getRepository(Lieu::class);
+        $lieu = $repo->findAllPlaces();
+
+        $serializer = new Serializer($normalizers, $encoders);
+        $infosLieu = $serializer->serialize($lieu, 'json');
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $repoLieuSet = $this->getDoctrine()->getRepository(Lieu::class);
+            $lieuSet = $repoLieuSet->findOneBy(array('nom' => $_POST['places_to_go']));
+            $sortie->setLieu($lieuSet);
+            $this->getDoctrine()->getManager()->flush();
+
+            return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->renderForm('sortie/edit.html.twig', [
+            'sortie' => $sortie,
+            'form' => $form,
+            'villes' => $villes,
+            'lieux' => $lieu,
+            'infosLieu' => $infosLieu,
+        ]);
+    }
+
+
+    /**
+     * @Route("/{id}/join", name="sortie_join", methods={"GET"})
+     */
+    public function join(Sortie $sortie): Response
+    {
+
+            $repo = $this->getDoctrine()->getRepository(Participant::class);
+            $id = $this->security->getUser()->getId();
+            $participant = $repo->findOneBy(array('id' => $id));
+            $inscription = new Inscription();
+            $inscription->setDateInscription(new \DateTime("now"));
+            $inscription->setSortie($sortie);
+            $inscription->setParticipant($participant);
+//            dd($inscription);
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($inscription);
+            $entityManager->flush();
+            $this->addFlash("success","Votre inscription a été prise en compte");
+        return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
     }
 
     /**
@@ -155,37 +238,6 @@ class SortieController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="sortie_show", methods={"GET"})
-     */
-    public function show(Sortie $sortie): Response
-    {
-        return $this->render('sortie/show.html.twig', [
-            'sortie' => $sortie,
-        ]);
-    }
-
-    /**
-     * @Route("/{id}/join", name="sortie_join", methods={"GET"})
-     */
-    public function join(Sortie $sortie): Response
-    {
-
-            $repo = $this->getDoctrine()->getRepository(Participant::class);
-            $id = $this->security->getUser()->getId();
-            $participant = $repo->findOneBy(array('id' => $id));
-            $inscription = new Inscription();
-            $inscription->setDateInscription(new \DateTime("now"));
-            $inscription->setSortie($sortie);
-            $inscription->setParticipant($participant);
-//            dd($inscription);
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($inscription);
-            $entityManager->flush();
-            $this->addFlash("success","Votre inscription a été prise en compte");
-        return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
-    }
-
-    /**
      * @Route("/{id}/quit", name="sortie_quit", methods={"GET"})
      */
     public function quit(Inscription $inscriptionId): Response
@@ -199,36 +251,7 @@ class SortieController extends AbstractController
         return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    /**
-     * @Route("/{id}/edit", name="sortie_edit", methods={"GET","POST"})
-     */
-    public function edit(Request $request, Sortie $sortie): Response
-    {
-        $encoders = [new XmlEncoder(), new JsonEncoder()];
-        $normalizers = [new ObjectNormalizer()];
 
-        $form = $this->createForm(SortieType::class, $sortie);
-        $form->handleRequest($request);
-
-        $repo = $this->getDoctrine()->getRepository(Lieu::class);
-        $lieu = $repo->findAllPlaces();
-
-        $serializer = new Serializer($normalizers, $encoders);
-        $infosLieu = $serializer->serialize($lieu, 'json');
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-
-            return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->renderForm('sortie/edit.html.twig', [
-            'sortie' => $sortie,
-            'form' => $form,
-            'lieux' => $lieu,
-            'infosLieu' => $infosLieu,
-        ]);
-    }
 
     /**
      * @Route("/{id}", name="sortie_delete", methods={"POST"})

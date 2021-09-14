@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Lieu;
 use App\Entity\Sortie;
 use Doctrine\DBAL\Types\DateTimeImmutableType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -26,11 +27,11 @@ class SortieType extends AbstractType
     {
         $builder
             ->add('nom',TextType::class, ['label'=>"Nom de la sortie :"])
-            ->add('dateDebut', DateType::class, array(
+            ->add('dateDebut', DateTimeType::class, array(
                 'label'=>"Date et heure de la sortie :",
                 "widget" => 'single_text',
-                "format" => 'yyyy-MM-dd',
-                "data" => new \DateTime()
+                "data" => new \DateTime(),
+                "with_seconds" => false
             ))
             //->add('dateDebut', DateTimeImmutableType::class, ['label'=>"Date et heure de la sortie :",'widget' => 'single_text'])
             ->add('dateCloture', DateType::class, ['label'=>"Date limite d'inscription :", "data" => new \DateTime() , 'widget' => 'single_text'])
@@ -41,9 +42,10 @@ class SortieType extends AbstractType
 //            ->add('etat', EntityType::class, ["label" => "Etat" , 'class' => Etat::class, 'choice_label' => "libelle"])
 //            ->add('organisateur', TextType::class ,["label"=>"Organisateur", "data"=>$this->security->getUser()->getId()])
             //->add('lieu', LieuType::class)
+//            ->add('lieu', EntityType::class, ["label" => "Lieu", 'class' => Lieu::class, 'choice_label' => "nom"])
 
-            //->add('Enregistrer',SubmitType::class)
-            //->add('Publier',SubmitType::class);
+            ->add('creer',SubmitType::class, ['label'=>"Enregistrer", 'attr' => ['class' => 'button']])
+            ->add('publier',SubmitType::class, ['label'=>"Publier", 'attr' => ['class' => 'button']]);
             //->add('Annuler',SubmitType::class);
         ;
     }

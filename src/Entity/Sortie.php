@@ -77,9 +77,9 @@ class Sortie
     private $lieu;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\OneToOne(targetEntity=Annulation::class, cascade={"persist", "remove"})
      */
-    private $motifAnnulation;
+    private $annulation;
 
     public function getId(): ?int
     {
@@ -228,14 +228,14 @@ class Sortie
         return $this;
     }
 
-    public function getMotifAnnulation(): ?string
+    public function getAnnulation(): ?Annulation
     {
-        return $this->motifAnnulation;
+        return $this->annulation;
     }
 
-    public function setMotifAnnulation(?string $motifAnnulation): self
+    public function setAnnulation(?Annulation $annulation): self
     {
-        $this->motifAnnulation = $motifAnnulation;
+        $this->annulation = $annulation;
 
         return $this;
     }

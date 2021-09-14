@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Annuler sortie{% endblock %}
+
+{% block body %}
+    <h1>Annuler une sortie</h1>
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button class="button">{{ button_label|default('Enregistrer') }}</button>
+    <a class="white-font button" href="{{ path('sortie_index') }}">Retour</a>
+    {{ form_end(form) }}
+
+
+{% endblock %}

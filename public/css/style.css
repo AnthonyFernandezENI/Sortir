@@ -1,6 +1,11 @@
 body{
     background:#ffbf85;
 }
+
+.title_creation_sortie{
+    text-align: center;
+}
+
 .disabled
 {
     pointer-events: none;
@@ -13,6 +18,7 @@ body{
 
 .title-bar{
     background:#00407a;
+    height: 5em;
 }
 
 .white-font{
@@ -37,11 +43,18 @@ li:hover{
 }
 
 .button{
+    margin: 0em;
     border-radius: 1em;
-    background : #00407a ;
+    border-width: 0;
+    background: linear-gradient(to bottom right, #00407a, #0077E4);
+    box-shadow: 0.5em 0.2em 0.2em #525252;
 }
 
 .button:hover{
-    background:#999999;
+    background: linear-gradient(to bottom right, #0077E4, #00407a);
+}
+
+.button:focus{
+    color: #ffbf85;
 }
 

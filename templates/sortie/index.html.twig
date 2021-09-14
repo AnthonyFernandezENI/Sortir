@@ -118,6 +118,9 @@
 
                         <td>
                             {% if app.user.id == sortie.organisateur.id %}
+                                {% if (sortie.dateDebut | date("U") > "now"|date("U")) and (sortie.etat.libelle == "Ouverte") %}
+                                    <a href="{{ path('sortie_cancel', {'id': sortie.id}) }}">Annuler</a>
+                                {% endif %}
                                 <a href="{{ path('sortie_edit', {'id': sortie.id}) }}">Modifier</a>
                             {% else %}
                                 <a href="{{ path('sortie_show', {'id': sortie.id}) }}">Afficher</a>

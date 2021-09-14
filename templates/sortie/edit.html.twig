@@ -3,11 +3,14 @@
 {% block title %}Edit Sortie{% endblock %}
 
 {% block body %}
-    <h1>Modifier une Sortie</h1>
+    <div class="grid-container">
+        <div class="grid-x grid-margin-x">
+            <h3 class="cell small-4 large-offset-4 title-centered">Modifier une sortie</h3>
+        </div>
 
-    {{ include('sortie/_form.html.twig', {'button_label': 'Enregistrer'}) }}
+        {{ include('sortie/_form.html.twig', {'button_label': 'Enregistrer'}) }}
 
-    <a class="white-font button" href="{{ path('sortie_index') }}">Retour</a>
 
-    {# {{ include('sortie/_delete_form.html.twig') }} #}
+
+    </div>
 {% endblock %}

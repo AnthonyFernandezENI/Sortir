@@ -2,12 +2,14 @@
 
 namespace App\Controller;
 
+use App\Entity\Annulation;
 use App\Entity\Etat;
 use App\Entity\Inscription;
 use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Entity\Lieu;
 use App\Entity\Ville;
+use App\Form\AnnulerType;
 use App\Form\LieuType;
 use App\Form\SortieType;
 use App\Form\VilleType;
@@ -105,7 +107,7 @@ class SortieController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($sortie);
             $entityManager->flush();
-            $this->addFlash("message","Votre sortie est bien créée !");
+            $this->addFlash("success","Votre sortie est bien créée !");
 
             return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -114,6 +116,32 @@ class SortieController extends AbstractController
             'sortie' => $sortie,
             'lieux' => $lieu,
             'infosLieu' => $infosLieu,
+            'form' => $form,
+        ]);
+    }
+
+    /**
+     * @Route("/{id}/cancel", name="sortie_cancel", methods={"GET","POST"})
+     */
+    public function cancel(Request $request, Sortie $sortie): Response
+    {
+        $annulation = new Annulation();
+        $form = $this->createForm(AnnulerType::class, $annulation);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $repo = $this->getDoctrine()->getRepository(Etat::class);
+            $etatSuppr = $repo->findOneBy(array('libelle' => 'Annulée'));
+            $sortie->setEtat($etatSuppr);
+            $sortie->setAnnulation($annulation);
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->flush();
+            $this->addFlash("success","Votre sortie a été annulée.");
+            return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->renderForm('sortie/cancel.html.twig', [
+            'sortie' => $sortie,
             'form' => $form,
         ]);
     }

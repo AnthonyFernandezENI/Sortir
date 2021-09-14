@@ -9,11 +9,11 @@ function afficherLieux() {
         }
     }
     if(trouver){
-        document.getElementById("nom").innerText = trouver.nom;
+        // document.getElementById("nom").innerText = trouver.nom;
         document.getElementById("rue").innerText = trouver.rue;
         document.getElementById("longitude").innerText = trouver.longitude;
         document.getElementById("latitude").innerText = trouver.latitude;
-        document.getElementById("villeNom").innerText = trouver.ville.nom;
+        // document.getElementById("villeNom").innerText = trouver.ville.nom;
         document.getElementById("villeCodePostal").innerText = trouver.ville.codePostal;
     }
 }

@@ -33,7 +33,7 @@
                 <select name="ville" id="ville">
 
                     {% for ville in villes %}
-                        {% if ville == sortie.lieu.ville %}
+                        {% if (sortie.lieu) and (ville == sortie.lieu.ville) %}
                             <option selected="selected">{{ ville.nom }} </option>
                         {% else %}
                             <option>{{ ville.nom }}</option>

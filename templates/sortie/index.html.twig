@@ -13,6 +13,7 @@
                 {% endfor %}
             {% endfor %}
             <h1>Sorties</h1>
+    </div>
 
 
             <div class=" grid-container-fluid float-right ">
@@ -25,22 +26,20 @@
                 <div class="medium-6 cell small-3 medium-4 large-5">
                     Participant : {{ app.user.prenom }}</div>
             </div>
-        </div>
+
 
         <div class="grid-container">
             <h5>Filtrer les sorties</h5>
 
             <form action="" method="post">
                 <div class="grid-container-fluid">
-                    <div class="grid-x grid-padding-x">
+                    <div class="grid-x grid-padding-x"> {# Si on lenlève, les champs "site" et "nom de la sortie contient" reviendront l'un en dessous de l'autre  #}
                         <div class="medium-6 cell small-3 medium-4 large-5">
-                            <label>Sites </label>
+                               <label>Sites </label>
                             <select>
-                                <option>
                                     {% for site in sites %}
                                 <option value="{{ site.id }}">{{ site.nom }}</option>
                                 {% endfor %}
-                                </option>
                             </select>
                         </div>
                         <div class="medium-6 cell small-3 medium-4 large-5">
@@ -63,10 +62,9 @@
                     <input id="checkbox4" type="checkbox"><label for="checkbox3">Sorties passées</label>
                 </fieldset>
             </div>
-            </form>
-            <div class="grid-x grid-margin-x" id="dpMonths" style="max-width:200px;">
 
-
+            <div class="row">
+            <div id="dpMonths" style="max-width:200px;">
                 <div class="cell small-6">
                     <label>Entre </label>
                     <input size="16" type="datetime-local">
@@ -77,15 +75,8 @@
                     <input size="16" type="date" id="end" name="end-date">
                 </div>
             </div>
-            <label>Entre </label>
-            <div class="small-10 columns">
-                <input size="16" type="datetime-local">
-            </div>
-            <label>Et </label>
-            <div class="small-10 columns">
-                <input size="16" type="date" id="end" name="end-date">
-            </div>
         </div>
+
         <div class="grid-container">
             <div class="grid-x grid-padding-x">
                 <table class="table">
@@ -101,9 +92,10 @@
                         <th>Actions</th>
                     </tr>
                     </thead>
-            </div>
+
             <tbody>
             {% for sortie in sorties %}
+{#                if sortie.site#}
                 <tr>
                     <div class="grid-container">
                         <td>{{ sortie.nom }}</td>
@@ -125,8 +117,6 @@
                         <td>{{ sortie.organisateur.prenom }} {{ sortie.organisateur.nom }} </td>
 
                         <td>
-
-
                             {% if app.user.id == sortie.organisateur.id %}
                                 <a href="{{ path('sortie_edit', {'id': sortie.id}) }}">Modifier</a>
                             {% else %}
@@ -148,8 +138,9 @@
 
                             {# <a href="{{ path('', {'id': }) }}">Annuler</a> #}
                         </td>
-
+                    </div>
                 </tr>
+
             {% else %}
                 <tr>
                     <td colspan="9">no records found</td>
@@ -165,4 +156,5 @@
             <a href="{{ path('sortie_new') }}" class="button">Créer une sortie </a>
         </div>
     </div>
+
 {% endblock %}

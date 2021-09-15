@@ -44,8 +44,8 @@ class SortieType extends AbstractType
             //->add('lieu', LieuType::class)
 //            ->add('lieu', EntityType::class, ["label" => "Lieu", 'class' => Lieu::class, 'choice_label' => "nom"])
 
-            ->add('creer',SubmitType::class, ['label'=>"Enregistrer", 'attr' => ['class' => 'button']])
-            ->add('publier',SubmitType::class, ['label'=>"Publier", 'attr' => ['class' => 'button']]);
+            ->add('creer',SubmitType::class, ['label'=>"Enregistrer", 'attr' => ['class' => 'button btn-center']])
+            ->add('publier',SubmitType::class, ['label'=>"Publier", 'attr' => ['class' => 'button btn-center']]);
             //->add('Annuler',SubmitType::class);
         ;
     }

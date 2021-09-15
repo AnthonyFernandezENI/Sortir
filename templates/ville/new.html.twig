@@ -3,9 +3,9 @@
 {% block title %}New Ville{% endblock %}
 
 {% block body %}
-    <h1>Create new Ville</h1>
+    <h1>Créer une nouvelle ville</h1>
 
     {{ include('ville/_form.html.twig') }}
 
-    <a href="{{ path('ville_index') }}">back to list</a>
+    <a href="{{ path('ville_index') }}"class="button">Retourner à la liste des villes</a>
 {% endblock %}

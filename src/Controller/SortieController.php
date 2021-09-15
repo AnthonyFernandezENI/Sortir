@@ -143,12 +143,33 @@ class SortieController extends AbstractController
     /**
      * @Route("/{id}", name="sortie_show", methods={"GET"})
      */
-    public function show(Sortie $sortie): Response
+    public function show(Sortie $sortie, SortieRepository $sortieRepository): Response
     {
         return $this->render('sortie/show.html.twig', [
             'sortie' => $sortie,
+            'sorties' => $sortieRepository->findAll(),
         ]);
     }
+
+//    public function index(SortieRepository $sortieRepository, SiteRepository $siteRepository): Response
+//    {
+//
+//        if (!$this->isGranted('IS_AUTHENTICATED_FULLY')) {
+//            return $this->redirectToRoute('app_login');
+//        } else {
+//            if(isset($_POST['select_site']) && $_POST['select_site'].value != "-1") {
+//                return $this->render('sortie/index.html.twig', [
+//                    'sorties' => $sortieRepository->findBySite(),
+//                    'sites'=> $siteRepository->findAll(),
+//                ]);
+//            }else{
+//                return $this->render('sortie/index.html.twig', [
+//                    'sorties' => $sortieRepository->findAll(),
+//                    'sites'=> $siteRepository->findAll(),
+//                ]);
+//            }
+//        }
+//    }
 
     /**
      * @Route("/{id}/edit", name="sortie_edit", methods={"GET","POST"})

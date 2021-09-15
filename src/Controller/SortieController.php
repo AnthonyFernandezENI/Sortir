@@ -50,10 +50,18 @@ class SortieController extends AbstractController
         if (!$this->isGranted('IS_AUTHENTICATED_FULLY')){
             return $this->redirectToRoute('app_login');
         } else {
-            return $this->render('sortie/index.html.twig', [
-                'sorties' => $sortieRepository->findAll(),
-                  'sites'=> $siteRepository->findAll(),
-            ]);
+            if(isset($_POST['select_site']) && $_POST['select_site'].value != "-1") {
+                return $this->render('sortie/index.html.twig', [
+                    'sorties' => $sortieRepository->findBySite(),
+                    'sites'=> $siteRepository->findAll(),
+                ]);
+            }else{
+                return $this->render('sortie/index.html.twig', [
+                    'sorties' => $sortieRepository->findAll(),
+                    'sites'=> $siteRepository->findAll(),
+                ]);
+            }
+
         }
     }
 
@@ -82,7 +90,7 @@ class SortieController extends AbstractController
         $normalizers = [new ObjectNormalizer()];
         $serializer = new Serializer($normalizers, $encoders);
         $infosLieu = $serializer->serialize($lieu, 'json');
-
+//        dd($infosLieu);
         if ($form->isSubmitted() && $form->isValid()) {
 
             $lieuSortie = new Lieu();

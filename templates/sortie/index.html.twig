@@ -95,19 +95,20 @@
 
     <div class="grid-container">
         <div class="grid-container-12">
-            <div style="height:22vw;" class="grid-container medium-cell-block">
+            <div class="grid-container medium-cell-block table-scroll">
 
                 <table class="table cell medium-12 medium-cell-block-y">
                     <thead>
                     <tr>
                         <th>Nom de la sortie</th>
                         <th>Date de la sortie</th>
-                        <th>Clôture</th>
-                        <th>Inscrits / places</th>
-                        <th>Etat</th>
-                        <th>Inscrit</th>
-                        <th>Organisateur</th>
-                        <th>Actions</th>
+                        <th class="colonne_table_tel">Lieu</th>
+                        <th class="colonne_table_pc">Clôture</th>
+                        <th class="colonne_table_pc">Inscrits / places</th>
+                        <th class="colonne_table_pc">Etat</th>
+                        <th class="colonne_table_pc">Inscrit</th>
+                        <th class="colonne_table_pc">Organisateur</th>
+                        <th class="colonne_table_pc">Actions</th>
                     </tr>
                     </thead>
 
@@ -116,12 +117,14 @@
                         {# if sortie.site #}
                         <tr>
                             <div class="grid-container">
-                                <td>{{ sortie.nom }}</td>
+                                <td class="colonne_table_pc">{{ sortie.nom }}</td>
+                                <td class="colonne_table_tel"><a href="{{ path('sortie_show', {'id': sortie.id}) }}">{{ sortie.nom }}</a></td>
                                 <td>{{ sortie.dateDebut ? sortie.dateDebut|date('d/m/Y H:i') : '' }}</td>
-                                <td>{{ sortie.dateCloture ? sortie.dateCloture|date('d/m/Y') : '' }}</td>
-                                <td>{{ sortie.inscriptions.count() }} / {{ sortie.nbInscriptionsMax }}</td>
-                                <td>{{ sortie.etat.libelle }}</td>
-                                <td>
+                                <td class="colonne_table_tel">{{ sortie.lieu.ville.nom }}</td>
+                                <td class="colonne_table_pc">{{ sortie.dateCloture ? sortie.dateCloture|date('d/m/Y') : '' }}</td>
+                                <td class="colonne_table_pc">{{ sortie.inscriptions.count() }} / {{ sortie.nbInscriptionsMax }}</td>
+                                <td class="colonne_table_pc">{{ sortie.etat.libelle }}</td>
+                                <td class="colonne_table_pc">
                                     <div style="text-align: center;">
                                         {% for inscription in sortie.inscriptions %}
                                             {% if inscription.participant.id == app.user.id %}
@@ -132,11 +135,11 @@
                                     </div>
                                 </td>
                                 <!-- Pseudo de l'organisateur -->
-                                <td>
+                                <td class="colonne_table_pc">
                                     <a href="{{ path('profil_show', {'id': sortie.organisateur.id}) }}">{{ sortie.organisateur.pseudo }}</a>
                                 </td>
 
-                                <td>
+                                <td class="colonne_table_pc">
                                     {% if sortie.etat.libelle != "Créée" %}
                                         <a href="{{ path('sortie_show', {'id': sortie.id}) }}">Afficher</a>
                                     {% endif %}
@@ -181,5 +184,7 @@
         </div>
             <br>
     </div>
+    </div>
+</div>
 
         {% endblock %}

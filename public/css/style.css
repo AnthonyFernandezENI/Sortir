@@ -1,6 +1,10 @@
 body{
     background:#ffbf85;
 }
+thead{
+    position: sticky;
+    top: 0em;
+}
 
 .title_creation_sortie{
     text-align: center;
@@ -79,6 +83,12 @@ li:hover{
     justify-content: center;
 }
 
+@media (max-width: 432px){
+    .table-scroll{
+        height:40em;
+    }
+}
+
 @media (max-width: 480px){
 
     .sortie-menu-tablette{
@@ -86,6 +96,12 @@ li:hover{
     }
     .sortie-menu{
         display: none;
+    }
+    .colonne_table_pc{
+        display: none;
+    }
+    .table-scroll{
+        height:21em;
     }
 }
 @media (min-width: 481px) and (max-width: 950px){
@@ -96,6 +112,13 @@ li:hover{
     .sortie-menu{
         display: none;
     }
+    .colonne_table_tel{
+        display: none;
+    }
+    .table-scroll{
+         height:22em;
+     }
+
 }
 
 @media (min-width: 951px){
@@ -105,5 +128,11 @@ li:hover{
 
     .sortie-menu{
         display: flex;
+    }
+    .colonne_table_tel{
+        display: none;
+    }
+    .table-scroll{
+        height:22em;
     }
 }

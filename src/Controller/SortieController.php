@@ -41,18 +41,19 @@ class SortieController extends AbstractController
     {
         $this->security = $security;
     }
+
     /**
      * @Route("/", name="sortie_index", methods={"GET"})
      */
     public function index(SortieRepository $sortieRepository, SiteRepository $siteRepository): Response
     {
 
-        if (!$this->isGranted('IS_AUTHENTICATED_FULLY')){
+        if (!$this->isGranted('IS_AUTHENTICATED_FULLY')) {
             return $this->redirectToRoute('app_login');
         } else {
             return $this->render('sortie/index.html.twig', [
                 'sorties' => $sortieRepository->findAll(),
-                  'sites'=> $siteRepository->findAll(),
+                'sites' => $siteRepository->findAll(),
             ]);
         }
     }
@@ -72,10 +73,9 @@ class SortieController extends AbstractController
         $lieu = $repo->findAllPlaces();
 
         $repoEtat = $this->getDoctrine()->getRepository(Etat::class);
-        if (isset($_POST['sortie']['creer']))
-        {
+        if (isset($_POST['sortie']['creer'])) {
             $etat = $repoEtat->findOneBy(array('libelle' => 'Créée'));
-        }else{
+        } else {
             $etat = $repoEtat->findOneBy(array('libelle' => 'Ouverte'));
         }
         $encoders = [new XmlEncoder(), new JsonEncoder()];
@@ -87,11 +87,11 @@ class SortieController extends AbstractController
 
             $lieuSortie = new Lieu();
 
-            if(isset($_POST['places_to_go'])){
+            if (isset($_POST['places_to_go'])) {
                 $choixSelect = $_POST['places_to_go'];
                 foreach ($lieu as $key => $value) {
-                    if($key == $choixSelect){
-                        $place = $repo->findBy(array('id'=>$value->getId()));
+                    if ($key == $choixSelect) {
+                        $place = $repo->findBy(array('id' => $value->getId()));
                         foreach ($place as $key2 => $value2) {
                             $lieuSortie = $value;
                         }
@@ -114,11 +114,10 @@ class SortieController extends AbstractController
             $entityManager->persist($sortie);
             $entityManager->persist($inscription);
             $entityManager->flush();
-            if (isset($_POST['sortie']['creer']))
-            {
-                $this->addFlash("success","Votre sortie est bien créée !");
-            }else{
-                $this->addFlash("success","Votre sortie est bien publiée !");
+            if (isset($_POST['sortie']['creer'])) {
+                $this->addFlash("success", "Votre sortie est bien créée !");
+            } else {
+                $this->addFlash("success", "Votre sortie est bien publiée !");
             }
 
 
@@ -165,10 +164,9 @@ class SortieController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $repoEtat = $this->getDoctrine()->getRepository(Etat::class);
-            if (isset($_POST['sortie']['creer']))
-            {
+            if (isset($_POST['sortie']['creer'])) {
                 $etat = $repoEtat->findOneBy(array('libelle' => 'Créée'));
-            }else{
+            } else {
                 $etat = $repoEtat->findOneBy(array('libelle' => 'Ouverte'));
             }
             $sortie->setEtat($etat);
@@ -177,11 +175,10 @@ class SortieController extends AbstractController
             $lieuSet = $repoLieuSet->findOneBy(array('nom' => $_POST['places_to_go']));
             $sortie->setLieu($lieuSet);
             $this->getDoctrine()->getManager()->flush();
-            if (isset($_POST['sortie']['creer']))
-            {
-                $this->addFlash("success","Votre sortie est passée en état 'créée'");
-            }else{
-                $this->addFlash("success","Votre sortie est passée en état 'publiée'");
+            if (isset($_POST['sortie']['creer'])) {
+                $this->addFlash("warning", "Votre sortie est passée en état 'créée'");
+            } else {
+                $this->addFlash("success", "Votre sortie est passée en état 'publiée'");
             }
 
             return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
@@ -202,19 +199,68 @@ class SortieController extends AbstractController
      */
     public function join(Sortie $sortie): Response
     {
+//        dd($sortie->getEtat()->getLibelle());
+        $user = $this->security->getUser();
+        if ($user->getSite() == $sortie->getSite()) {
+            if ($sortie->getEtat()->getLibelle() == "Ouverte") {
+                if ($sortie->getEtat()->getLibelle() != "Clôturée") {
+                    foreach ($sortie->getInscriptions() as $inscription) {
+                        if ($inscription->getParticipant() == $user) {
+                            $this->addFlash("alert", "Erreur. Vous êtes déjà inscrit à cette sortie.");
+                            return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
+                        }
+                    }
 
-            $repo = $this->getDoctrine()->getRepository(Participant::class);
-            $id = $this->security->getUser()->getId();
-            $participant = $repo->findOneBy(array('id' => $id));
-            $inscription = new Inscription();
-            $inscription->setDateInscription(new \DateTime("now"));
-            $inscription->setSortie($sortie);
-            $inscription->setParticipant($participant);
-//            dd($inscription);
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($inscription);
-            $entityManager->flush();
-            $this->addFlash("success","Votre inscription a été prise en compte");
+                    //Ajout d'une inscription
+                    $repo = $this->getDoctrine()->getRepository(Participant::class);
+                    $id = $this->security->getUser()->getId();
+                    $participant = $repo->findOneBy(array('id' => $id));
+                    $inscription = new Inscription();
+                    $inscription->setDateInscription(new \DateTime("now"));
+                    $inscription->setSortie($sortie);
+                    $inscription->setParticipant($participant);
+
+                    //Changement état en cloturée si plus de place
+                    if ($sortie->getInscriptions()->count() +1 >= $sortie->getNbInscriptionsMax()){
+                        $repoEtat = $this->getDoctrine()->getRepository(Etat::class);
+                        $etat = $repoEtat->findOneBy(array('libelle' => 'Clôturée'));
+                        $sortie->setEtat($etat);
+                    }
+
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $entityManager->persist($inscription);
+                    $entityManager->persist($sortie);
+                    $entityManager->flush();
+                    $this->addFlash("success", "Votre inscription a été prise en compte");
+                    return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
+
+
+                } else {
+                    $this->addFlash("alert", "Erreur. Cette sortie est déjà complète.");
+                    return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
+                }
+            } else {
+                $this->addFlash("alert", "Erreur. Les inscriptions pour cette sortie ne sont pas ouvertes.");
+                return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
+            }
+        } else {
+            $this->addFlash("alert", "Erreur.Vous ne pouvez pas vous inscrire à cette sortie car elle appartient à un autre site.");
+            return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
+        }
+    }
+
+    /**
+     * @Route("/{id}/publier", name="sortie_publier", methods={"GET"})
+     */
+    public function publier(Sortie $sortie): Response
+    {
+        $repoEtat = $this->getDoctrine()->getRepository(Etat::class);
+        $etat = $repoEtat->findOneBy(array('libelle' => 'Ouverte'));
+        $sortie->setEtat($etat);
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($sortie);
+        $entityManager->flush();
+        $this->addFlash("success", "Votre sortie a été publiée");
         return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
     }
 
@@ -226,7 +272,6 @@ class SortieController extends AbstractController
         $annulation = new Annulation();
         $form = $this->createForm(AnnulerType::class, $annulation);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
             $repo = $this->getDoctrine()->getRepository(Etat::class);
             $etatSuppr = $repo->findOneBy(array('libelle' => 'Annulée'));
@@ -234,10 +279,9 @@ class SortieController extends AbstractController
             $sortie->setAnnulation($annulation);
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->flush();
-            $this->addFlash("success","Votre sortie a été annulée.");
+            $this->addFlash("success", "Votre sortie a été annulée.");
             return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
         }
-
         return $this->renderForm('sortie/cancel.html.twig', [
             'sortie' => $sortie,
             'form' => $form,
@@ -249,33 +293,29 @@ class SortieController extends AbstractController
      */
     public function quit(Inscription $inscriptionId): Response
     {
+
         $repo = $this->getDoctrine()->getRepository(Inscription::class);
         $inscription = $repo->find($inscriptionId);
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->remove($inscription);
         $entityManager->flush();
-        $this->addFlash("success","Votre désinscription a été prise en compte");
+        $this->addFlash("success", "Votre désinscription a été prise en compte");
         return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
     }
-
-
 
     /**
      * @Route("/{id}", name="sortie_delete", methods={"POST"})
      */
     public function delete(Request $request, Sortie $sortie): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$sortie->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $sortie->getId(), $request->request->get('_token'))) {
             $repo = $this->getDoctrine()->getRepository(Etat::class);
             $etatSuppr = $repo->findOneBy(array('libelle' => 'Supprimée'));
-//            dd($etatSuppr);
             $sortie->setEtat($etatSuppr);
             $entityManager = $this->getDoctrine()->getManager();
-//            $entityManager->remove($sortie);
             $entityManager->flush();
-            $this->addFlash("success","Sortie supprimée");
+            $this->addFlash("success", "Sortie supprimée");
         }
-
         return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
     }
 }

@@ -25,6 +25,20 @@ body{
     color: white;
 }
 
+li.title-bar-title:hover{
+    background: none;
+}
+
+.title-bar-text{
+    margin-top: 0.2em;
+}
+
+.title_site{
+    margin-top: 0.1em;
+    font-family: Arial;
+    color: #ffffff;
+}
+
 a:hover{
     color:#00407a;
 }
@@ -65,3 +79,31 @@ li:hover{
     justify-content: center;
 }
 
+@media (max-width: 480px){
+
+    .sortie-menu-tablette{
+        display: none;
+    }
+    .sortie-menu{
+        display: none;
+    }
+}
+@media (min-width: 481px) and (max-width: 950px){
+    .sortie-menu-tablette{
+        display: flex;
+    }
+
+    .sortie-menu{
+        display: none;
+    }
+}
+
+@media (min-width: 951px){
+    .sortie-menu-tablette{
+        display: none;
+    }
+
+    .sortie-menu{
+        display: flex;
+    }
+}

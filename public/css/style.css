@@ -1,6 +1,10 @@
 body{
     background:#ffbf85;
 }
+thead{
+    position: sticky;
+    top: 0em;
+}
 
 .title_creation_sortie{
     text-align: center;
@@ -23,6 +27,20 @@ body{
 
 .white-font{
     color: white;
+}
+
+li.title-bar-title:hover{
+    background: none;
+}
+
+.title-bar-text{
+    margin-top: 0.2em;
+}
+
+.title_site{
+    margin-top: 0.1em;
+    font-family: Arial;
+    color: #ffffff;
 }
 
 a:hover{
@@ -65,3 +83,56 @@ li:hover{
     justify-content: center;
 }
 
+@media (max-width: 432px){
+    .table-scroll{
+        height:40em;
+    }
+}
+
+@media (max-width: 480px){
+
+    .sortie-menu-tablette{
+        display: none;
+    }
+    .sortie-menu{
+        display: none;
+    }
+    .colonne_table_pc{
+        display: none;
+    }
+    .table-scroll{
+        height:21em;
+    }
+}
+@media (min-width: 481px) and (max-width: 950px){
+    .sortie-menu-tablette{
+        display: flex;
+    }
+
+    .sortie-menu{
+        display: none;
+    }
+    .colonne_table_tel{
+        display: none;
+    }
+    .table-scroll{
+         height:22em;
+     }
+
+}
+
+@media (min-width: 951px){
+    .sortie-menu-tablette{
+        display: none;
+    }
+
+    .sortie-menu{
+        display: flex;
+    }
+    .colonne_table_tel{
+        display: none;
+    }
+    .table-scroll{
+        height:22em;
+    }
+}

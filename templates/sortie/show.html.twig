@@ -13,67 +13,67 @@
         <div class="grid-x grid-margin-x">
             <div class="cell small-12 medium-12 large-6">
                 <div class="grid-x grid-margin-x ">
-                    <div class="cell large-5">Nom de la sortie:</div>
+                    <div class="cell large-5"><b>Nom de la sortie:</b></div>
                     <div class="cell large-7">{{ sortie.nom }}</div>
                 </div>
                 <br>
 
                 <div class="grid-x grid-margin-x">
-                    <div class="cell small-5">Date et heure de la sortie :</div>
+                    <div class="cell small-5"><b>Date et heure de la sortie :</b></div>
                     <div class="cell small-7">{{ sortie.dateDebut ? sortie.dateDebut|date('d/m/Y H:i') : '' }}</div>
                 </div>
                 <br>
 
                 <div class="grid-x grid-margin-x">
-                    <div class="cell small-5">Date limite d'inscription :</div>
+                    <div class="cell small-5"><b>Date limite d'inscription :</b></div>
                     <div class="cell small-7">{{ sortie.dateCloture ? sortie.dateCloture|date('d/m/Y') : '' }}</div>
                 </div>
                 <br>
 
                 <div class="grid-x grid-margin-x">
-                    <div class="cell large-5">Nombre de places :</div>
+                    <div class="cell large-5"><b>Nombre de places :</b></div>
                     <div class="cell large-7">{{ sortie.nbInscriptionsMax }} </div>
                 </div>
                 <br>
                 <div class="grid-x grid-margin-x">
-                    <div class="cell large-5">Durée :</div>
+                    <div class="cell large-5"><b>Durée :</b></div>
                     <div class="cell large-7">{{ sortie.duree }} minutes</div>
                 </div>
                 <br>
                 <div class="grid-x grid-margin-x">
-                    <div class="cell large-5">Description et infos :</div>
+                    <div class="cell large-5"><b>Description et infos :</b></div>
                     <div class="cell large-7">{{ sortie.description }}</div>
                 </div>
                 <br>
             </div>
             <div class="cell small-12 medium-12 large-6">
                 <div class="grid-x grid-margin-x">
-                    <div class="cell large-4">Ville organisatrice :</div>
+                    <div class="cell large-4"><b>Ville organisatrice :</b></div>
                     <div class="cell large-8">{{ sortie.lieu.ville.nom }}</div>
                 </div>
                 <br>
                 <div class="grid-x grid-margin-x">
-                    <div class="cell large-4">Lieu :</div>
+                    <div class="cell large-4"><b>Lieu :</b></div>
                     <div class="cell large-8">{{ sortie.lieu.nom }}</div>
                 </div>
                 <br>
                 <div class="grid-x grid-margin-x">
-                    <div class="cell large-4">Rue :</div>
+                    <div class="cell large-4"><b>Rue :</b></div>
                     <div class="cell large-8"> {{ sortie.lieu.rue }}</div>
                 </div>
                 <br>
                 <div class="grid-x grid-margin-x">
-                    <div class="cell large-4">Code postal :</div>
+                    <div class="cell large-4"><b>Code postal :</b></div>
                     <div class="cell large-8">{{ sortie.lieu.ville.codePostal }}</div>
                 </div>
                 <br>
                 <div class="grid-x grid-margin-x">
-                    <div class="cell large-4">Latitude :</div>
+                    <div class="cell large-4"><b>Latitude :</b></div>
                     <div class="cell large-8">{{ sortie.lieu.latitude }}</div>
                 </div>
                 <br>
                 <div class="grid-x grid-margin-x">
-                    <div class="cell large-4">Longitude :</div>
+                    <div class="cell large-4"><b>Longitude :</b></div>
                     <div class="cell large-8">{{ sortie.lieu.longitude }}</div>
                 </div>
                 <br>
@@ -87,7 +87,7 @@
         {# {% endif %} #}
 
         <div class="margin-left">
-            <h5> <strong> Liste des participants inscrits</strong> </h5>
+            <h5><strong> Liste des participants inscrits</strong></h5>
         </div>
 
         <table class="radius bordered shadow">
@@ -99,25 +99,22 @@
             </thead>
 
             <tbody>
-            {% for sortie in sorties %}
+            {% if sortie.inscriptions.count() > 0 %}
                 {% for inscription in sortie.inscriptions %}
                     <tr>
-                        <div class="grid-container">
                             <td>{{ inscription.participant.pseudo }}</td>
                             <td>{{ inscription.participant.prenom }} {{ inscription.participant.nom }}</td>
-                        </div>
                     </tr>
                 {% endfor %}
 
             {% else %}
                 <tr>
-                    <td colspan="9">Aucun participant inscrit</td>
+                    <td colspan="2">Aucun participant inscrit</td>
                 </tr>
-            {% endfor %}
+            {% endif %}
             </tbody>
         </table>
-
-        <a class="button" href="{{ path('sortie_index') }}">Retour aux sortie</a>
+        <a class="button" href="{{ path('sortie_index') }}">Retour</a>
     </div>
 
 

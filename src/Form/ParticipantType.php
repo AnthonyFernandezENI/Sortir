@@ -41,7 +41,6 @@ class ParticipantType extends AbstractType
             ->add('prenom')
             ->add('telephone')
             ->add('mail')
-            ->add('actif')
             ->add('site', EntityType::class, ["label" => "Site", 'class' => Site::class, 'choice_label' => "nom"]);
     }
 

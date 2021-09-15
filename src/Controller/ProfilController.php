@@ -34,8 +34,8 @@ class ProfilController extends AbstractController
         $participant = new Participant();
         $form = $this->createForm(ParticipantType::class, $participant);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
+
             $participant->setAdministrateur(false);
             $participant->setActif(true);
             $participant->setPassword(
@@ -45,9 +45,10 @@ class ProfilController extends AbstractController
                         $form->get('password')->getData()
                     )
             );
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($participant);
-            $entityManager->flush();
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->persist($participant);
+                $entityManager->flush();
+
 
             return $this->redirectToRoute('profil_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -75,8 +76,9 @@ class ProfilController extends AbstractController
     {
         $form = $this->createForm(ParticipantType::class, $participant);
         $form->handleRequest($request);
-
+//        dd($participant);
         if ($form->isSubmitted() && $form->isValid()) {
+
             $participant->setPassword(
 
                 $passwordEncoder->encodePassword(
@@ -84,8 +86,10 @@ class ProfilController extends AbstractController
                     $form->get('password')->getData()
                 )
             );
-            $this->getDoctrine()->getManager()->flush();
-
+//            $this->getDoctrine()->getManager()->flush();
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($participant);
+            $entityManager->flush();
             return $this->redirectToRoute('profil_index', [], Response::HTTP_SEE_OTHER);
         }
 

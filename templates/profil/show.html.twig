@@ -16,8 +16,8 @@
     {% endif %}
     <b>Prénom :</b>{{ participant.prenom }}<br>
     <b>Nom :</b> {{ participant.nom }}<br>
-    <b>Telephone :</b> {{ participant.telephone }}<br>
-    <b>Email :</b> {{ participant.mail }}<br>
+    <b>Telephone :</b> {{ participant.telephone ? participant.telephone : 'non renseigné' }}<br>
+    <b>Email :</b> {{ participant.mail ? participant.mail : 'non renseigné' }}<br>
     <b>Ville de rattachement :</b> {{ participant.site.nom }}<br>
     {% if app.user.administrateur %}
         {{ include('profil/_delete_form.html.twig') }}
@@ -27,9 +27,9 @@
             {{ include('profil/_enable_form.html.twig') }}
         {% endif %}
     {% endif %}
+    <br>
     {% if app.user.id == participant.id %}
-        <button class="button"><a class="white-font"
-                                  href="{{ path('profil_edit', {'id': participant.id}) }}">Modifier</a></button>
+        <a class="button" href="{{ path('profil_edit', {'id': participant.id}) }}">Modifier</a>
     {% endif %}
-    <a class="white-font button" href="{{ path('sortie_index') }}">Retour</a>
+    <a class="button" href="{{ path('sortie_index') }}">Retour</a>
 {% endblock %}

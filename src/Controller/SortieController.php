@@ -206,7 +206,6 @@ class SortieController extends AbstractController
      */
     public function join(Sortie $sortie): Response
     {
-//        dd($sortie->getEtat()->getLibelle());
         $user = $this->security->getUser();
         if ($user->getSite() == $sortie->getSite()) {
             if ($sortie->getEtat()->getLibelle() == "Ouverte") {
@@ -228,7 +227,7 @@ class SortieController extends AbstractController
                     $inscription->setParticipant($participant);
 
                     //Changement état en cloturée si plus de place
-                    if ($sortie->getInscriptions()->count() +1 >= $sortie->getNbInscriptionsMax()){
+                    if ($sortie->getInscriptions()->count() + 1 >= $sortie->getNbInscriptionsMax()) {
                         $repoEtat = $this->getDoctrine()->getRepository(Etat::class);
                         $etat = $repoEtat->findOneBy(array('libelle' => 'Clôturée'));
                         $sortie->setEtat($etat);
@@ -252,6 +251,30 @@ class SortieController extends AbstractController
             }
         } else {
             $this->addFlash("alert", "Erreur.Vous ne pouvez pas vous inscrire à cette sortie car elle appartient à un autre site.");
+            return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
+        }
+    }
+
+    /**
+     * @Route("/{id}/quit", name="sortie_quit", methods={"GET"})
+     */
+    public function quit(Sortie $sortie): Response
+    {
+        $user = $this->security->getUser();
+        $repo = $this->getDoctrine()->getRepository(Inscription::class);
+        $inscription = $repo->findOneBy(array('sortie' => $sortie, 'Participant' => $user));
+        if ($inscription == null) {
+            $this->addFlash("alert", "Erreur.Vous n'êtes pas inscrit à cette sortie.");
+            return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
+        } else {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->remove($inscription);
+            $repoEtat = $this->getDoctrine()->getRepository(Etat::class);
+            $etat = $repoEtat->findOneBy(array('libelle' => 'Ouverte'));
+            $sortie->setEtat($etat);
+            $entityManager->persist($sortie);
+            $entityManager->flush();
+            $this->addFlash("success", "Votre désinscription a été prise en compte");
             return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
         }
     }
@@ -293,21 +316,6 @@ class SortieController extends AbstractController
             'sortie' => $sortie,
             'form' => $form,
         ]);
-    }
-
-    /**
-     * @Route("/{id}/quit", name="sortie_quit", methods={"GET"})
-     */
-    public function quit(Inscription $inscriptionId): Response
-    {
-
-        $repo = $this->getDoctrine()->getRepository(Inscription::class);
-        $inscription = $repo->find($inscriptionId);
-        $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->remove($inscription);
-        $entityManager->flush();
-        $this->addFlash("success", "Votre désinscription a été prise en compte");
-        return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
     }
 
     /**

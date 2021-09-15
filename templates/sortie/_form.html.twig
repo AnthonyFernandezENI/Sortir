@@ -46,14 +46,14 @@
             <div class="cell small-6">Lieu :</div>
             <div class="cell small-6">
                 <select name="places_to_go" id="places_to_go">
-                    {# <option value="" selected="selected" disabled>- Choisissez un lieu -</option> #}
-                    {% for lieu in lieux %}
-                        {% if lieu == sortie.lieu %}
-                            <option selected="selected">{{ lieu.nom }} </option>
-                        {% else %}
-                            <option>{{ lieu.nom }}</option>
-                        {% endif %}
-                    {% endfor %}
+{#                    #}{# <option value="" selected="selected" disabled>- Choisissez un lieu -</option> #}
+{#                    {% for lieu in lieux %}#}
+{#                        {% if lieu == sortie.lieu %}#}
+{#                            <option selected="selected">{{ lieu.nom }} </option>#}
+{#                        {% else %}#}
+{#                            <option>{{ lieu.nom }}</option>#}
+{#                        {% endif %}#}
+{#                    {% endfor %}#}
                 </select>
             </div>
         </div>
@@ -76,3 +76,4 @@
     </div>
     <input type="hidden" value="{{ infosLieu }}" id="hidden-degeu">
 
+</div>

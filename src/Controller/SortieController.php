@@ -90,7 +90,7 @@ class SortieController extends AbstractController
         $normalizers = [new ObjectNormalizer()];
         $serializer = new Serializer($normalizers, $encoders);
         $infosLieu = $serializer->serialize($lieu, 'json');
-        dd($infosLieu);
+//        dd($infosLieu);
         if ($form->isSubmitted() && $form->isValid()) {
 
             $lieuSortie = new Lieu();

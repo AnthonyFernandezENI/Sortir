@@ -1,10 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Sorties{% endblock %}
+{% block title %}Sortir.com{% endblock %}
 
 {% block body %}
-    <div class="grid-container">
-        <div class="medium-6 cell small-3 medium-4 large-5">
+<div class="grid-container">
+    <div class="grid-x grid-margin-x">
+        <div class="small-12">
             {% for label, messages in app.flashes %}
                 {% for message in messages %}
                     <div class="callout {{ label }}">
@@ -12,10 +13,8 @@
                     </div>
                 {% endfor %}
             {% endfor %}
-            <h1>Sorties</h1>
-    </div>
-
-
+        </div>
+        <div class="small-12">
             <div class=" grid-container-fluid float-right ">
                 <div class="medium-6 cell small-3 medium-4 large-5">
                     Date du jour : {{ "now"| date ("d/m/Y") }}</div>
@@ -26,11 +25,14 @@
                 <div class="medium-6 cell small-3 medium-4 large-5">
                     Participant : {{ app.user.prenom }}</div>
             </div>
+        </div>
+    </div>
+    <div class="grid-x grid-margin-x">
 
-
-        <div class="grid-container">
+        <div class="cell small-12 medium-12 large-12">
             <h5>Filtrer les sorties</h5>
-
+        </div>
+        
             <form action="" method="post">
                 <div class="grid-container-fluid">
                     <div class="grid-x grid-padding-x"> {# Si on lenlève, les champs "site" et "nom de la sortie contient" reviendront l'un en dessous de l'autre  #}
@@ -51,33 +53,59 @@
                     </div>
                 </div>
             </form>
+        <div class="cell small-12 medium-12 large-5">
 
-            <div class="grid-container">
-                <fieldset class="large-7 cell">
-                    <input id="checkbox1" type="checkbox"><label for="checkbox1">Sorties dont je suis
-                        l'organisateur</label>
-                    <input id="checkbox2" type="checkbox"><label for="checkbox2">Sorties auxquelles je suis
-                        inscrit/e</label>
-                    <input id="checkbox3" type="checkbox"><label for="checkbox3">Sorties auxquelles je ne suis pas
-                        inscrit/e</label>
-                    <input id="checkbox4" type="checkbox"><label for="checkbox3">Sorties passées</label>
-                </fieldset>
-            </div>
-
-            <div class="row">
-            <div id="dpMonths" style="max-width:200px;">
+            <div class="grid-x grid-margin-x">
                 <div class="cell small-6">
-                    <label>Entre </label>
-                    <input size="16" type="datetime-local">
+                    <label>Site :</label>
                 </div>
-
                 <div class="cell small-6">
-                    <label>Et </label>
-                    <input size="16" type="date" id="end" name="end-date">
+                    <select>
+                        {% for site in sites %}
+                            <option value="{{ site.id }}">{{ site.nom }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="grid-x grid-margin-x">
+                <div class="cell small-6">
+                    <label>Le nom de la sortie contient :</label>
+                </div>
+                <div class="cell small-6">
+                    <input type="search" placeholder="Rechercher">
+                </div>
+            </div>
+            <div class="grid-x grid-margin-x">
+                <div class="cell small-2">
+                    <label>Entre :</label>
+                </div>
+                <div class="cell small-4">
+                    <input type="date" value="{{ "now"| date ("d/m/Y") }}">
+                </div>
+                <div class="cell small-2">
+                    <label>Et :</label>
+                </div>
+                <div class="cell small-4">
+                    <input type="date" value="{{ "now"| date ("d/m/Y") }}">
                 </div>
             </div>
         </div>
+        <div class="cell small-12 medium-12 large-5">
+            <div class="grid-x grid-margin-x">
+                <div class="cell small-12"><input id="checkbox1" type="checkbox"><label for="checkbox1">Sorties dont je suis l'organisateur</label></div>
+                <div class="cell small-12"><input id="checkbox2" type="checkbox"><label for="checkbox2">Sorties auxquelles je suis inscrit/e</label></div>
+                <div class="cell small-12"><input id="checkbox3" type="checkbox"><label for="checkbox3">Sorties auxquelles je ne suis pas inscrit/e</label></div>
+                <div class="cell small-12"><input id="checkbox4" type="checkbox"><label for="checkbox4">Sorties passées</label></div>
+            </div>
+        </div>
+        <div class="cell small-12 medium-12 large-2">
+            <button class="button">Rechercher</button>
+            </form>
+        </div>
+    </div>
 
+
+    <div class="grid-container">
         <div class="grid-container">
             <div class="grid-x grid-padding-x">
                 <table class="table">
@@ -94,71 +122,72 @@
                     </tr>
                     </thead>
 
-            <tbody>
-            {% for sortie in sorties %}
-{#                if sortie.site#}
-                <tr>
-                    <div class="grid-container">
-                        <td>{{ sortie.nom }}</td>
-                        <td>{{ sortie.dateDebut ? sortie.dateDebut|date('d/m/Y à H:i') : '' }}</td>
-                        <td>{{ sortie.dateCloture ? sortie.dateCloture|date('d/m/Y') : '' }}</td>
-                        <td>{{ sortie.inscriptions.count() }} / {{ sortie.nbInscriptionsMax }}</td>
-                        <td>{{ sortie.etat.libelle }}</td>
-                        <td>
-                            <div style="text-align: center;">
-                                {% for inscription in sortie.inscriptions %}
-                                    {% if inscription.participant.id == app.user.id %}
-                                        X {# Affiche une croix si le participant est inscrit à la sortie #}
-                                        {% set inscrit = true %}
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
-                        </td>
+                    <tbody>
+                    {% for sortie in sorties %}
+                        {# if sortie.site #}
+                        <tr>
+                            <div class="grid-container">
+                                <td>{{ sortie.nom }}</td>
+                                <td>{{ sortie.dateDebut ? sortie.dateDebut|date('d/m/Y H:i') : '' }}</td>
+                                <td>{{ sortie.dateCloture ? sortie.dateCloture|date('d/m/Y') : '' }}</td>
+                                <td>{{ sortie.inscriptions.count() }} / {{ sortie.nbInscriptionsMax }}</td>
+                                <td>{{ sortie.etat.libelle }}</td>
+                                <td>
+                                    <div style="text-align: center;">
+                                        {% for inscription in sortie.inscriptions %}
+                                            {% if inscription.participant.id == app.user.id %}
+                                                X {# Affiche une croix si le participant est inscrit à la sortie #}
+                                                {% set inscrit = true %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </td>
 
-                        <td>{{ sortie.organisateur.prenom }} {{ sortie.organisateur.nom }} </td>
+                                <td>{{ sortie.organisateur.prenom }} {{ sortie.organisateur.nom }} </td>
 
-                        <td>
-                            {% if app.user.id == sortie.organisateur.id %}
-                                {% if (sortie.dateDebut | date("U") > "now"|date("U")) and (sortie.etat.libelle == "Ouverte") %}
-                                    <a href="{{ path('sortie_cancel', {'id': sortie.id}) }}">Annuler</a>
-                                {% endif %}
-                                <a href="{{ path('sortie_edit', {'id': sortie.id}) }}">Modifier</a>
-                            {% else %}
-                                <a href="{{ path('sortie_show', {'id': sortie.id}) }}">Afficher</a>
-                                {% if (sortie.dateDebut | date("U") > "now"|date("U")) and (sortie.etat.libelle == "Ouverte") %}
-                                    {% set inscrit = false %}
-                                    {% for inscription in sortie.inscriptions %}
-                                        {% if inscription.participant.id == app.user.id %}
-                                            <a href="{{ path('sortie_quit', {'id': inscription.id}) }}">Se désister</a>
-                                            {% set inscrit = true %}
+                                <td>
+                                    {% if app.user.id == sortie.organisateur.id %}
+                                        {% if (sortie.dateDebut | date("U") > "now"|date("U")) and (sortie.etat.libelle == "Ouverte") %}
+                                            <a href="{{ path('sortie_cancel', {'id': sortie.id}) }}">Annuler</a>
                                         {% endif %}
-                                    {% endfor %}
-                                    {% if not inscrit %}
-                                        <a href="{{ path('sortie_join', {'id': sortie.id}) }}">S'inscrire</a>
+                                        <a href="{{ path('sortie_edit', {'id': sortie.id}) }}">Modifier</a>
+                                    {% else %}
+                                        <a href="{{ path('sortie_show', {'id': sortie.id}) }}">Afficher</a>
+                                        {% if (sortie.dateDebut | date("U") > "now"|date("U")) and (sortie.etat.libelle == "Ouverte") %}
+                                            {% set inscrit = false %}
+                                            {% for inscription in sortie.inscriptions %}
+                                                {% if inscription.participant.id == app.user.id %}
+                                                    <a href="{{ path('sortie_quit', {'id': inscription.id}) }}">Se
+                                                        désister</a>
+                                                    {% set inscrit = true %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            {% if not inscrit %}
+                                                <a href="{{ path('sortie_join', {'id': sortie.id}) }}">S'inscrire</a>
+                                            {% endif %}
+
+                                        {% endif %}
                                     {% endif %}
 
-                                {% endif %}
-                            {% endif %}
+                                    {# <a href="{{ path('', {'id': }) }}">Annuler</a> #}
+                                </td>
+                            </div>
+                        </tr>
 
-                            {# <a href="{{ path('', {'id': }) }}">Annuler</a> #}
-                        </td>
-                    </div>
-                </tr>
-
-            {% else %}
-                <tr>
-                    <td colspan="9">no records found</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-            </table>
+                    {% else %}
+                        <tr>
+                            <td colspan="9">no records found</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
 
-    <div class="grid-container">
-        <div class="grid-x grid-padding-x">
-            <a href="{{ path('sortie_new') }}" class="button">Créer une sortie </a>
+        <div class="grid-container">
+            <div class="grid-x grid-padding-x">
+                <a href="{{ path('sortie_new') }}" class="button">Créer une sortie </a>
+            </div>
         </div>
-    </div>
 
-{% endblock %}
+        {% endblock %}

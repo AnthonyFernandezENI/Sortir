@@ -172,10 +172,25 @@ class SortieController extends AbstractController
         $infosLieu = $serializer->serialize($lieu, 'json');
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $repoEtat = $this->getDoctrine()->getRepository(Etat::class);
+            if (isset($_POST['sortie']['creer']))
+            {
+                $etat = $repoEtat->findOneBy(array('libelle' => 'Créée'));
+            }else{
+                $etat = $repoEtat->findOneBy(array('libelle' => 'Ouverte'));
+            }
+            $sortie->setEtat($etat);
+
             $repoLieuSet = $this->getDoctrine()->getRepository(Lieu::class);
             $lieuSet = $repoLieuSet->findOneBy(array('nom' => $_POST['places_to_go']));
             $sortie->setLieu($lieuSet);
             $this->getDoctrine()->getManager()->flush();
+            if (isset($_POST['sortie']['creer']))
+            {
+                $this->addFlash("success","Votre sortie est passée en état 'créée'");
+            }else{
+                $this->addFlash("success","Votre sortie est passée en état 'publiée'");
+            }
 
             return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -266,6 +281,7 @@ class SortieController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
 //            $entityManager->remove($sortie);
             $entityManager->flush();
+            $this->addFlash("success","Sortie supprimée");
         }
 
         return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);

@@ -3,6 +3,10 @@
 {% block title %}Log in!{% endblock %}
 
 {% block body %}
+<div class="grid-container center">
+    <div class="grid-x grid-margin-x">
+        <div class="columns small-4 medium-4 large-4"></div>
+        <div class="columns small-4 medium-4 large-4">
     <form method="post">
         {% if error %}
             <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
@@ -14,7 +18,7 @@
             </div>
         {% endif %}
 
-
+        <h1 class="h3 mb-3 font-weight-normal">Se connecter</h1>
         <label for="inputPseudo">Identifiant :</label>
         <input type="text" value="{{ last_username }}" name="pseudo" id="inputPseudo" class="form-control"
                autocomplete="username" required autofocus>
@@ -41,4 +45,8 @@
             Connexion
         </button>
     </form>
+        </div>
+        <div class="columns small-4 medium-4 large-4"></div>
+    </div>
+</div>
 {% endblock %}

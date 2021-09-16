@@ -31,6 +31,9 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Validator\Constraints\Date;
 
+/**
+ * @Route("/sortie")
+ */
 class SortieController extends AbstractController
 {
     /**

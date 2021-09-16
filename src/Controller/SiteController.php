@@ -20,9 +20,17 @@ class SiteController extends AbstractController
      */
     public function index(SiteRepository $siteRepository): Response
     {
-        return $this->render('site/index.html.twig', [
-            'sites' => $siteRepository->findAll(),
-        ]);
+        if (!$this->isGranted('IS_AUTHENTICATED_FULLY')) {
+            return $this->redirectToRoute('app_login');
+        } else {
+            if($this->getUser()->getAdministrateur() == 1) {
+                return $this->render('site/index.html.twig', [
+                    'sites' => $siteRepository->findAll(),
+                ]);
+            } else {
+                return $this->redirectToRoute('sortie_index');
+            }
+        }
     }
 
     /**
@@ -30,22 +38,30 @@ class SiteController extends AbstractController
      */
     public function new(Request $request): Response
     {
-        $site = new Site();
-        $form = $this->createForm(SiteType::class, $site);
-        $form->handleRequest($request);
+        if (!$this->isGranted('IS_AUTHENTICATED_FULLY')) {
+            return $this->redirectToRoute('app_login');
+        } else {
+            if($this->getUser()->getAdministrateur() == 1) {
+                $site = new Site();
+                $form = $this->createForm(SiteType::class, $site);
+                $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($site);
-            $entityManager->flush();
+                if ($form->isSubmitted() && $form->isValid()) {
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $entityManager->persist($site);
+                    $entityManager->flush();
 
-            return $this->redirectToRoute('site_index', [], Response::HTTP_SEE_OTHER);
+                    return $this->redirectToRoute('site_index', [], Response::HTTP_SEE_OTHER);
+                }
+
+                return $this->renderForm('site/new.html.twig', [
+                    'site' => $site,
+                    'form' => $form,
+                ]);
+            } else {
+                return $this->redirectToRoute('sortie_index');
+            }
         }
-
-        return $this->renderForm('site/new.html.twig', [
-            'site' => $site,
-            'form' => $form,
-        ]);
     }
 
     /**
@@ -53,9 +69,17 @@ class SiteController extends AbstractController
      */
     public function show(Site $site): Response
     {
-        return $this->render('site/show.html.twig', [
-            'site' => $site,
-        ]);
+        if (!$this->isGranted('IS_AUTHENTICATED_FULLY')) {
+            return $this->redirectToRoute('app_login');
+        } else {
+            if($this->getUser()->getAdministrateur() == 1) {
+                return $this->render('site/show.html.twig', [
+                    'site' => $site,
+                ]);
+            } else {
+                return $this->redirectToRoute('sortie_index');
+            }
+        }
     }
 
     /**
@@ -63,19 +87,27 @@ class SiteController extends AbstractController
      */
     public function edit(Request $request, Site $site): Response
     {
-        $form = $this->createForm(SiteType::class, $site);
-        $form->handleRequest($request);
+        if (!$this->isGranted('IS_AUTHENTICATED_FULLY')) {
+            return $this->redirectToRoute('app_login');
+        } else {
+            if($this->getUser()->getAdministrateur() == 1) {
+                $form = $this->createForm(SiteType::class, $site);
+                $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+                if ($form->isSubmitted() && $form->isValid()) {
+                    $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('site_index', [], Response::HTTP_SEE_OTHER);
+                    return $this->redirectToRoute('site_index', [], Response::HTTP_SEE_OTHER);
+                }
+
+                return $this->renderForm('site/edit.html.twig', [
+                    'site' => $site,
+                    'form' => $form,
+                ]);
+            } else {
+                return $this->redirectToRoute('sortie_index');
+            }
         }
-
-        return $this->renderForm('site/edit.html.twig', [
-            'site' => $site,
-            'form' => $form,
-        ]);
     }
 
     /**
@@ -83,12 +115,20 @@ class SiteController extends AbstractController
      */
     public function delete(Request $request, Site $site): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$site->getId(), $request->request->get('_token'))) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->remove($site);
-            $entityManager->flush();
-        }
+        if (!$this->isGranted('IS_AUTHENTICATED_FULLY')) {
+            return $this->redirectToRoute('app_login');
+        } else {
+            if($this->getUser()->getAdministrateur() == 1) {
+                if ($this->isCsrfTokenValid('delete' . $site->getId(), $request->request->get('_token'))) {
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $entityManager->remove($site);
+                    $entityManager->flush();
+                }
 
-        return $this->redirectToRoute('site_index', [], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('site_index', [], Response::HTTP_SEE_OTHER);
+            } else {
+                return $this->redirectToRoute('sortie_index');
+            }
+        }
     }
 }

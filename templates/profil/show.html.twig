@@ -9,27 +9,68 @@
 {% endblock %}
 
 {% block body %}
-    {% if app.user.id == participant.id %}
-        <h1>Mon profil</h1>
-    {% else %}
-        <h1>{{ participant.pseudo }}</h1>
-    {% endif %}
-    <b>Prénom :</b>{{ participant.prenom }}<br>
-    <b>Nom :</b> {{ participant.nom }}<br>
-    <b>Telephone :</b> {{ participant.telephone ? participant.telephone : 'non renseigné' }}<br>
-    <b>Email :</b> {{ participant.mail ? participant.mail : 'non renseigné' }}<br>
-    <b>Ville de rattachement :</b> {{ participant.site.nom }}<br>
-    {% if app.user.administrateur %}
-        {{ include('profil/_delete_form.html.twig') }}
-        {% if participant.actif %}
-            {{ include('profil/_disable_form.html.twig') }}
-        {% else %}
-            {{ include('profil/_enable_form.html.twig') }}
-        {% endif %}
-    {% endif %}
-    <br>
-    {% if app.user.id == participant.id %}
-        <a class="button" href="{{ path('profil_edit', {'id': participant.id}) }}">Modifier</a>
-    {% endif %}
-    <a class="button" href="{{ path('sortie_index') }}">Retour</a>
+    <div class="grid-container">
+        <div class="grid-x grid-margin-x">
+
+            <div class="columns small-4 medium-4 large-4"></div>
+
+            <div class="columns small-4 medium-4 large-4">
+                {% if app.user.id == participant.id %}
+                    <h1>Mon profil</h1>
+                {% else %}
+                    <h1>{{ participant.pseudo }}</h1>
+                {% endif %}
+                <div class="grid-x grid-margin-x ">
+                    <div class="cell large-4"><b>Prénom :</b></div>
+                    <div class="cell large-8">{{ participant.prenom }}</div>
+                </div>
+                <br>
+                <div class="grid-x grid-margin-x ">
+                    <div class="cell large-4"><b>Nom :</b></div>
+                    <div class="cell large-8">{{ participant.nom }}</div>
+                </div>
+                <br>
+                <div class="grid-x grid-margin-x ">
+                    <div class="cell large-4"><b>Telephone :</b></div>
+                    <div class="cell large-8">{{ participant.telephone ? participant.telephone : 'non renseigné' }}</div>
+                </div>
+                <br>
+                <div class="grid-x grid-margin-x ">
+                    <div class="cell large-4"><b>Email :</b></div>
+                    <div class="cell large-8">{{ participant.mail ? participant.mail : 'non renseigné' }}</div>
+                </div>
+                <br>
+                <div class="grid-x grid-margin-x ">
+                    <div class="cell large-7"><b>Ville de rattachement :         </b> </div>
+                    <div class="cell large-5">{{ participant.site.nom }}</div>
+                </div>
+                <br>
+
+
+            </div>
+            <div class="columns small-4 medium-4 large-4"></div>
+        </div>
+    </div>
+
+    <div class="grid-container">
+        <div class="grid-x grid-margin-x">
+    <div class="button-group align-center">
+
+                {% if app.user.administrateur %}
+                    {{ include('profil/_delete_form.html.twig') }}
+                    {% if participant.actif %}
+                        {{ include('profil/_disable_form.html.twig') }}
+                    {% else %}
+                        {{ include('profil/_enable_form.html.twig') }}
+                    {% endif %}
+                {% endif %}
+                <br>
+                {% if app.user.id == participant.id %}
+                    <a class="button" href="{{ path('profil_edit', {'id': participant.id}) }}">Modifier</a>
+                {% endif %}
+                <a class="button" href="{{ path('sortie_index') }}">Retour</a>
+    </div>
+    </div>
+</div>
+
 {% endblock %}

@@ -323,50 +323,45 @@ class SortieController extends AbstractController
     public function join(Sortie $sortie): Response
     {
         $user = $this->security->getUser();
-        if ($user->getSite() == $sortie->getSite()) {
-            if ($sortie->getEtat()->getLibelle() == "Ouverte") {
-                if ($sortie->getEtat()->getLibelle() != "Clôturée") {
-                    foreach ($sortie->getInscriptions() as $inscription) {
-                        if ($inscription->getParticipant() == $user) {
-                            $this->addFlash("alert", "Erreur. Vous êtes déjà inscrit à cette sortie.");
-                            return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
-                        }
+        if ($sortie->getEtat()->getLibelle() == "Ouverte") {
+            if ($sortie->getEtat()->getLibelle() != "Clôturée") {
+                foreach ($sortie->getInscriptions() as $inscription) {
+                    if ($inscription->getParticipant() == $user) {
+                        $this->addFlash("alert", "Erreur. Vous êtes déjà inscrit à cette sortie.");
+                        return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
                     }
-
-                    //Ajout d'une inscription
-                    $repo = $this->getDoctrine()->getRepository(Participant::class);
-                    $id = $this->security->getUser()->getId();
-                    $participant = $repo->findOneBy(array('id' => $id));
-                    $inscription = new Inscription();
-                    $inscription->setDateInscription(new \DateTime("now"));
-                    $inscription->setSortie($sortie);
-                    $inscription->setParticipant($participant);
-
-                    //Changement état en cloturée si plus de place
-                    if ($sortie->getInscriptions()->count() + 1 >= $sortie->getNbInscriptionsMax()) {
-                        $repoEtat = $this->getDoctrine()->getRepository(Etat::class);
-                        $etat = $repoEtat->findOneBy(array('libelle' => 'Clôturée'));
-                        $sortie->setEtat($etat);
-                    }
-
-                    $entityManager = $this->getDoctrine()->getManager();
-                    $entityManager->persist($inscription);
-                    $entityManager->persist($sortie);
-                    $entityManager->flush();
-                    $this->addFlash("success", "Votre inscription a été prise en compte");
-                    return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
-
-
-                } else {
-                    $this->addFlash("alert", "Erreur. Cette sortie est déjà complète.");
-                    return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
                 }
+
+                //Ajout d'une inscription
+                $repo = $this->getDoctrine()->getRepository(Participant::class);
+                $id = $this->security->getUser()->getId();
+                $participant = $repo->findOneBy(array('id' => $id));
+                $inscription = new Inscription();
+                $inscription->setDateInscription(new \DateTime("now"));
+                $inscription->setSortie($sortie);
+                $inscription->setParticipant($participant);
+
+                //Changement état en cloturée si plus de place
+                if ($sortie->getInscriptions()->count() + 1 >= $sortie->getNbInscriptionsMax()) {
+                    $repoEtat = $this->getDoctrine()->getRepository(Etat::class);
+                    $etat = $repoEtat->findOneBy(array('libelle' => 'Clôturée'));
+                    $sortie->setEtat($etat);
+                }
+
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->persist($inscription);
+                $entityManager->persist($sortie);
+                $entityManager->flush();
+                $this->addFlash("success", "Votre inscription a été prise en compte");
+                return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
+
+
             } else {
-                $this->addFlash("alert", "Erreur. Les inscriptions pour cette sortie ne sont pas ouvertes.");
+                $this->addFlash("alert", "Erreur. Cette sortie est déjà complète.");
                 return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
             }
         } else {
-            $this->addFlash("alert", "Erreur.Vous ne pouvez pas vous inscrire à cette sortie car elle appartient à un autre site.");
+            $this->addFlash("alert", "Erreur. Les inscriptions pour cette sortie ne sont pas ouvertes.");
             return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
         }
     }

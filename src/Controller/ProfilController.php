@@ -21,9 +21,17 @@ class ProfilController extends AbstractController
      */
     public function index(ParticipantRepository $participantRepository): Response
     {
-        return $this->render('profil/index.html.twig', [
-            'participants' => $participantRepository->findAll(),
-        ]);
+        if (!$this->isGranted('IS_AUTHENTICATED_FULLY')) {
+            return $this->redirectToRoute('app_login');
+        } else {
+            if ($this->getUser()->getAdministrateur() == 1) {
+                return $this->render('profil/index.html.twig', [
+                    'participants' => $participantRepository->findAll(),
+                ]);
+            } else {
+                return $this->redirectToRoute('sortie_index');
+            }
+        }
     }
 
     /**
@@ -31,32 +39,40 @@ class ProfilController extends AbstractController
      */
     public function new(Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
     {
-        $participant = new Participant();
-        $form = $this->createForm(ParticipantType::class, $participant);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
+        if (!$this->isGranted('IS_AUTHENTICATED_FULLY')) {
+            return $this->redirectToRoute('app_login');
+        } else {
+            if ($this->getUser()->getAdministrateur() == 1) {
+                $participant = new Participant();
+                $form = $this->createForm(ParticipantType::class, $participant);
+                $form->handleRequest($request);
+                if ($form->isSubmitted() && $form->isValid()) {
 
-            $participant->setAdministrateur(false);
-            $participant->setActif(true);
-            $participant->setPassword(
+                    $participant->setAdministrateur(false);
+                    $participant->setActif(true);
+                    $participant->setPassword(
 
-                    $passwordEncoder->encodePassword(
-                        $participant,
-                        $form->get('password')->getData()
-                    )
-            );
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->persist($participant);
-                $entityManager->flush();
+                        $passwordEncoder->encodePassword(
+                            $participant,
+                            $form->get('password')->getData()
+                        )
+                    );
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $entityManager->persist($participant);
+                    $entityManager->flush();
 
 
-            return $this->redirectToRoute('profil_index', [], Response::HTTP_SEE_OTHER);
+                    return $this->redirectToRoute('profil_index', [], Response::HTTP_SEE_OTHER);
+                }
+
+                return $this->renderForm('profil/new.html.twig', [
+                    'participant' => $participant,
+                    'form' => $form,
+                ]);
+            } else {
+                return $this->redirectToRoute('sortie_index');
+            }
         }
-
-        return $this->renderForm('profil/new.html.twig', [
-            'participant' => $participant,
-            'form' => $form,
-        ]);
     }
 
     /**
@@ -64,9 +80,13 @@ class ProfilController extends AbstractController
      */
     public function show(Participant $participant): Response
     {
-        return $this->render('profil/show.html.twig', [
-            'participant' => $participant,
-        ]);
+        if (!$this->isGranted('IS_AUTHENTICATED_FULLY')) {
+            return $this->redirectToRoute('app_login');
+        } else {
+            return $this->render('profil/show.html.twig', [
+                'participant' => $participant,
+            ]);
+        }
     }
 
     /**
@@ -74,29 +94,39 @@ class ProfilController extends AbstractController
      */
     public function edit(Request $request, UserPasswordEncoderInterface $passwordEncoder, Participant $participant): Response
     {
-        $form = $this->createForm(ParticipantType::class, $participant);
-        $form->handleRequest($request);
+        if (!$this->isGranted('IS_AUTHENTICATED_FULLY')) {
+            return $this->redirectToRoute('app_login');
+        } else {
+            if (($this->getUser()->getAdministrateur() == 1) || ($this->getUser()->getId() == $participant->getId())) {
+                $form = $this->createForm(ParticipantType::class, $participant);
+                $form->handleRequest($request);
 //        dd($participant);
-        if ($form->isSubmitted() && $form->isValid()) {
+                if ($form->isSubmitted() && $form->isValid()) {
 
-            $participant->setPassword(
+                    $participant->setPassword(
 
-                $passwordEncoder->encodePassword(
-                    $participant,
-                    $form->get('password')->getData()
-                )
-            );
+                        $passwordEncoder->encodePassword(
+                            $participant,
+                            $form->get('password')->getData()
+                        )
+                    );
 //            $this->getDoctrine()->getManager()->flush();
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($participant);
-            $entityManager->flush();
-            return $this->redirectToRoute('profil_index', [], Response::HTTP_SEE_OTHER);
-        }
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $entityManager->persist($participant);
+                    $entityManager->flush();
+                    return $this->redirectToRoute('profil_index', [], Response::HTTP_SEE_OTHER);
+                }
 
-        return $this->renderForm('profil/edit.html.twig', [
-            'participant' => $participant,
-            'form' => $form,
-        ]);
+                return $this->renderForm('profil/edit.html.twig', [
+                    'participant' => $participant,
+                    'form' => $form,
+                ]);
+            } else {
+                return $this->redirectToRoute('profil_show', [
+                    'id' => $participant->getId(),
+                ]);
+            }
+        }
     }
 
     /**
@@ -104,13 +134,22 @@ class ProfilController extends AbstractController
      */
     public function delete(Request $request, Participant $participant): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$participant->getId(), $request->request->get('_token'))) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->remove($participant);
-            $entityManager->flush();
+        if (!$this->isGranted('IS_AUTHENTICATED_FULLY')) {
+            return $this->redirectToRoute('app_login');
+        } else {
+            if ($this->getUser()->getAdministrateur() == 1) {
+                if ($this->isCsrfTokenValid('delete' . $participant->getId(), $request->request->get('_token'))) {
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $entityManager->remove($participant);
+                    $entityManager->flush();
+                }
+                return $this->redirectToRoute('profil_index', [], Response::HTTP_SEE_OTHER);
+            } else {
+                return $this->redirectToRoute('profil_show', [
+                    'id' => $participant->getId(),
+                ]);
+            }
         }
-
-        return $this->redirectToRoute('profil_index', [], Response::HTTP_SEE_OTHER);
     }
 
     /**
@@ -118,14 +157,22 @@ class ProfilController extends AbstractController
      */
     public function disable(Request $request, Participant $participant): Response
     {
-
-        if ($this->isCsrfTokenValid('disable'.$participant->getId(), $request->request->get('_token'))) {
-            $participant->setActif(false);
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->flush();
+        if (!$this->isGranted('IS_AUTHENTICATED_FULLY')) {
+            return $this->redirectToRoute('app_login');
+        } else {
+            if ($this->getUser()->getAdministrateur() == 1) {
+                if ($this->isCsrfTokenValid('disable' . $participant->getId(), $request->request->get('_token'))) {
+                    $participant->setActif(false);
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $entityManager->flush();
+                }
+                return $this->redirectToRoute('profil_index', [], Response::HTTP_SEE_OTHER);
+            } else {
+                return $this->redirectToRoute('profil_show', [
+                    'id' => $participant->getId(),
+                ]);
+            }
         }
-
-        return $this->redirectToRoute('profil_index', [], Response::HTTP_SEE_OTHER);
     }
 
     /**
@@ -133,14 +180,22 @@ class ProfilController extends AbstractController
      */
     public function enable(Request $request, Participant $participant): Response
     {
-
-        if ($this->isCsrfTokenValid('enable'.$participant->getId(), $request->request->get('_token'))) {
-            $participant->setActif(true);
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->flush();
+        if (!$this->isGranted('IS_AUTHENTICATED_FULLY')) {
+            return $this->redirectToRoute('app_login');
+        } else {
+            if ($this->getUser()->getAdministrateur() == 1) {
+                if ($this->isCsrfTokenValid('enable' . $participant->getId(), $request->request->get('_token'))) {
+                    $participant->setActif(true);
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $entityManager->flush();
+                }
+                return $this->redirectToRoute('profil_index', [], Response::HTTP_SEE_OTHER);
+            } else {
+                return $this->redirectToRoute('profil_show', [
+                    'id' => $participant->getId(),
+                ]);
+            }
         }
-
-        return $this->redirectToRoute('profil_index', [], Response::HTTP_SEE_OTHER);
     }
 
 

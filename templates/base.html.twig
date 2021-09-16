@@ -42,14 +42,15 @@
             </div>
             <div class="title-bar-right">
                 <ul class="menu align-right">
-                    <li><a class="white-font" href="/home">Accueil</a></li>
-                    {% if(app.user.administrateur == 1) %}
-                    <li><a class="white-font" href="/ville">Villes</a></li>
-                    <li><a class="white-font" href="/site">Sites</a></li>
-                    {% endif %}
+
                     {% if app.user == null %}
                         <li><a class="white-font" href="/login">Se Connecter</a></li>
                     {% else %}
+                        <li><a class="white-font" href="/home">Accueil</a></li>
+                        {% if(app.user.administrateur == 1) %}
+                            <li><a class="white-font" href="/ville">Villes</a></li>
+                            <li><a class="white-font" href="/site">Sites</a></li>
+                        {% endif %}
                         <li><a class="white-font" href="{{ path('profil_show', {'id': app.user.id}) }}">Mon profil</a></li>
                         <li><a class="white-font" href="/logout">Se déconnecter</a></li>
                     {% endif %}

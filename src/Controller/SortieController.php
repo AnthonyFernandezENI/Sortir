@@ -6,6 +6,7 @@ use App\Entity\Annulation;
 use App\Entity\Etat;
 use App\Entity\Inscription;
 use App\Entity\Participant;
+use App\Entity\Site;
 use App\Entity\Sortie;
 use App\Entity\Lieu;
 use App\Entity\Ville;
@@ -45,23 +46,111 @@ class SortieController extends AbstractController
     /**
      * @Route("/", name="sortie_index", methods={"GET"})
      */
-    public function index(SortieRepository $sortieRepository, SiteRepository $siteRepository): Response
+    public function index(SortieRepository $sortieRepository, SiteRepository $siteRepository, Request $request): Response
     {
 
         if (!$this->isGranted('IS_AUTHENTICATED_FULLY')) {
             return $this->redirectToRoute('app_login');
         } else {
-            if(isset($_POST['select_site']) && $_POST['select_site'].value != "-1") {
-                return $this->render('sortie/index.html.twig', [
-                    'sorties' => $sortieRepository->findBySite(),
-                    'sites'=> $siteRepository->findAll(),
-                ]);
-            }else{
-                return $this->render('sortie/index.html.twig', [
-                    'sorties' => $sortieRepository->findAll(),
-                    'sites'=> $siteRepository->findAll(),
-                ]);
+            //Récupération des sorties sans aucun tri
+            $sorties = $sortieRepository->findAll();
+
+            //Application des changements d'états en Passée ou Activité en cours si les conditions de date sont réunies
+            foreach ($sorties as $sortie) {
+                $timeStampDebutSortie = $sortie->getDateDebut()->getTimestamp();
+                $timeStampFinSortie = $timeStampDebutSortie + ($sortie->getDuree() * 60);
+                if (($timeStampDebutSortie < time()) && (($sortie->getEtat()->getLibelle() == 'Ouverte') || ($sortie->getEtat()->getLibelle() == 'Clôturée') || ($sortie->getEtat()->getLibelle() == 'Activité en cours'))) {
+
+                    if ($timeStampFinSortie < time()) {
+
+                        $repoEtat = $this->getDoctrine()->getRepository(Etat::class);
+                        $etat = $repoEtat->findOneBy(array('libelle' => 'Passée'));
+                        $sortie->setEtat($etat);
+                        $entityManager = $this->getDoctrine()->getManager();
+                        $entityManager->persist($sortie);
+                    } else {
+                        $repoEtat = $this->getDoctrine()->getRepository(Etat::class);
+                        $etat = $repoEtat->findOneBy(array('libelle' => 'Activité en cours'));
+                        $sortie->setEtat($etat);
+                        $entityManager = $this->getDoctrine()->getManager();
+                        $entityManager->persist($sortie);
+                    }
+                }
             }
+
+            $filtre = array();
+
+            if (($request->get('site')) && ($request->get('site') != "Tous")) {
+                $repoSite = $this->getDoctrine()->getRepository(Site::class);
+                $siteId = $repoSite->findOneBy(array('nom' => $request->get('site')));
+                $filtre['site'] = $siteId;
+            }
+
+            if ($request->get('organisateur')) {
+                $filtre['organisateur'] = $this->getUser();
+            }
+
+            if ($request->get('site')) { //S'il y a eu un retour de formulaire
+
+                $sorties = $sortieRepository->findBy($filtre);
+            }
+
+            if ($request->get('passee')) {
+                $sortieTri = array();
+                foreach ($sorties as $sortie) {
+                    $timeStampFinSortie = $sortie->getDateDebut()->getTimestamp() + ($sortie->getDuree() * 60);
+                    if ($timeStampFinSortie < time()) {
+                        array_push($sortieTri, $sortie);
+                    }
+                }
+                $sorties = $sortieTri;
+            }
+
+            if (($request->get('inscrit')) && (!$request->get('nonInscrit'))) {
+                $sortieTri = array();
+                foreach ($sorties as $sortie) {
+                    foreach ($sortie->getInscriptions() as $inscription) {
+                        if ($inscription->getParticipant() == $this->getUser()) {
+                            array_push($sortieTri, $sortie);
+                        }
+                    }
+                }
+                $sorties = $sortieTri;
+            }
+
+            if (($request->get('nonInscrit')) && (!$request->get('inscrit'))) {
+                $sortieTri = array();
+                foreach ($sorties as $sortie) {
+                    $inscrit = false;
+                    foreach ($sortie->getInscriptions() as $inscription) {
+                        if ($inscription->getParticipant() == $this->getUser()) {
+                            $inscrit = true;
+                        }
+                    }
+                    if (!$inscrit) {
+                        array_push($sortieTri, $sortie);
+                    }
+                }
+                $sorties = $sortieTri;
+            }
+
+            //Tri d'affichage des sorties
+            $sortieTriArchive = array();
+            foreach ($sorties as $sortie) {
+                $timeStampLimiteArchivage = $sortie->getDateDebut()->getTimestamp() + ($sortie->getDuree() * 60) + 2629800;
+
+                if ($timeStampLimiteArchivage > time()) {
+                    array_push($sortieTriArchive, $sortie);
+                }
+            }
+            $sorties = $sortieTriArchive;
+
+
+            $this->getDoctrine()->getManager()->flush();
+            return $this->render('sortie/index.html.twig', [
+                'sorties' => $sorties,
+                'sites' => $siteRepository->findAll(),
+            ]);
         }
     }
 
@@ -89,7 +178,6 @@ class SortieController extends AbstractController
         $normalizers = [new ObjectNormalizer()];
         $serializer = new Serializer($normalizers, $encoders);
         $infosLieu = $serializer->serialize($lieu, 'json');
-//        dd($infosLieu);
         if ($form->isSubmitted() && $form->isValid()) {
 
             $lieuSortie = new Lieu();
@@ -145,6 +233,15 @@ class SortieController extends AbstractController
      */
     public function show(Sortie $sortie, SortieRepository $sortieRepository): Response
     {
+        //Tri d'affichage des sorties
+        $timeStampLimiteArchivage = $sortie->getDateDebut()->getTimestamp() + ($sortie->getDuree() * 60) + 2629800;
+
+        if ($timeStampLimiteArchivage < time()) {
+            //Erreur d'accès
+            $this->addFlash("alert", "Erreur. Cette sortie est archivée.");
+            return $this->redirectToRoute('sortie_index', [], Response::HTTP_SEE_OTHER);
+        }
+
         return $this->render('sortie/show.html.twig', [
             'sortie' => $sortie,
             'sorties' => $sortieRepository->findAll(),

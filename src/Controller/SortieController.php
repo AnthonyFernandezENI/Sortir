@@ -24,7 +24,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -213,13 +212,13 @@ class SortieController extends AbstractController
 
             $inscription = new Inscription();
             $inscription->setDateInscription(new DateTime("now"));
-            $inscription->setParticipant($this->security->getUser());
+            $inscription->setParticipant($this->getUser());
             $inscription->setSortie($sortie);
 
             $sortie->setEtat($etat);
             $sortie->setLieu($lieuSortie);
-            $sortie->setOrganisateur($this->security->getUser());
-            $sortie->setSite($this->security->getUser()->getSite());
+            $sortie->setOrganisateur($this->getUser());
+            $sortie->setSite($this->getUser()->getSite());
 
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($sortie);
@@ -340,7 +339,7 @@ class SortieController extends AbstractController
      */
     public function join(Sortie $sortie): Response
     {
-        $user = $this->security->getUser();
+        $user = $this->getUser();
         if ($sortie->getEtat()->getLibelle() == "Ouverte") {
             if ($sortie->getEtat()->getLibelle() != "Clôturée") {
                 foreach ($sortie->getInscriptions() as $inscription) {
@@ -352,7 +351,7 @@ class SortieController extends AbstractController
 
                 //Ajout d'une inscription
                 $repo = $this->getDoctrine()->getRepository(Participant::class);
-                $id = $this->security->getUser()->getId();
+                $id = $this->getUser()->getId();
                 $participant = $repo->findOneBy(array('id' => $id));
                 $inscription = new Inscription();
                 $inscription->setDateInscription(new \DateTime("now"));
@@ -389,7 +388,7 @@ class SortieController extends AbstractController
      */
     public function quit(Sortie $sortie): Response
     {
-        $user = $this->security->getUser();
+        $user = $this->getUser();
         $repo = $this->getDoctrine()->getRepository(Inscription::class);
         $inscription = $repo->findOneBy(array('sortie' => $sortie, 'Participant' => $user));
         if ($inscription == null) {

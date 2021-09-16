@@ -19,14 +19,12 @@ class SortieRepository extends ServiceEntityRepository
         parent::__construct($registry, Sortie::class);
     }
 
-    public function findBySite($value): ?Array
-    {
-        return $this->createQueryBuilder('s')
-            ->innerJoin('s.site', 'site')
-            ->addSelect('s')
-            ->getQuery()
-            ->getResult()
-            ;
+    public function findByKeyword($keyword){
+        $query = $this->createQueryBuilder('a')
+            ->where('a.nom LIKE :key')
+            ->setParameter('key' , '%'.$keyword.'%')->getQuery();
+
+        return $query->getResult();
     }
 
     // /**

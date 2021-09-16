@@ -71,21 +71,32 @@ class SortieController extends AbstractController
                 }
             }
 
-            $filtre = array();
+            if ($request->get('keyword') != null ){
+                $sorties = $sortieRepository->findByKeyword($request->get('keyword'));
+            }
 
+            //Tri par site
             if (($request->get('site')) && ($request->get('site') != "Tous")) {
-                $repoSite = $this->getDoctrine()->getRepository(Site::class);
-                $siteId = $repoSite->findOneBy(array('nom' => $request->get('site')));
-                $filtre['site'] = $siteId;
+                $sortieTri = array();
+                foreach ($sorties as $sortie) {
+                    if ($sortie->getSite()->getNom() == $request->get('site')) {
+                        array_push($sortieTri, $sortie);
+                    }
+                }
+                $sorties = $sortieTri;
             }
 
+            //Tri par organisateur
             if ($request->get('organisateur')) {
-                $filtre['organisateur'] = $this->getUser();
+                $sortieTri = array();
+                foreach ($sorties as $sortie) {
+                    if ($sortie->getOrganisateur() == $this->getUser()) {
+                        array_push($sortieTri, $sortie);
+                    }
+                }
+                $sorties = $sortieTri;
             }
 
-            if ($request->get('site')) { //S'il y a eu un retour de formulaire
-                $sorties = $sortieRepository->findBy($filtre);
-            }
 
             if ($request->get('passee')) {
                 $sortieTri = array();

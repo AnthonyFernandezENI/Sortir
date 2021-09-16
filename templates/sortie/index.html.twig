@@ -26,7 +26,7 @@
             <br>
             <div class="grid-container-fluid float-right">
                 <div>
-                    Participant : {{ app.user.prenom }}</div>
+                    Participant : {{ app.user.pseudo }}</div>
             </div>
         </div>
     </div>
@@ -39,12 +39,14 @@
         <div class="cell small-12 medium-12 large-5">
             <div class="grid-x grid-margin-x">
                 <div class="cell small-6">
+                    <form>
                     <label>Site :</label>
                 </div>
                 <div class="cell small-6">
-                    <select>
+                    <select name="site">
+                        <option>Tous</option>
                         {% for site in sites %}
-                            <option value="{{ site.id }}" {{ site == app.user.site ? 'selected="selected"' : '' }}>{{ site.nom }}</option>
+                            <option>{{ site.nom }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -54,7 +56,7 @@
                     <label>Le nom de la sortie contient :</label>
                 </div>
                 <div class="cell small-6">
-                    <input type="search" placeholder="Rechercher">
+                    <input name="keyword" type="search" placeholder="Rechercher">
                 </div>
             </div>
             <div class="grid-x grid-margin-x">
@@ -62,25 +64,25 @@
                     <label>Entre :</label>
                 </div>
                 <div class="cell small-6 medium-6 large-4">
-                    <input type="date" value="{{ "now"| date ("d/m/Y") }}">
+                    <input type="date" name="entre" value="{{ "now"| date ("d/m/Y") }}">
                 </div>
                 <div class="cell small-6 medium-6 large-2">
                     <label>Et :</label>
                 </div>
                 <div class="cell small-6 medium-6 large-4">
-                    <input type="date" value="{{ "now"| date ("d/m/Y") }}">
+                    <input type="date" name="et" value="{{ "now"| date ("d/m/Y") }}">
                 </div>
             </div>
         </div>
         <div class="cell small-12 medium-12 large-5">
             <div class="grid-x grid-margin-x">
-                <div class="cell small-12"><input id="checkbox1" type="checkbox"><label for="checkbox1">Sorties dont je
+                <div class="cell small-12"><input id="checkbox1" type="checkbox" name="organisateur"><label for="checkbox1">Sorties dont je
                         suis l'organisateur</label></div>
-                <div class="cell small-12"><input id="checkbox2" type="checkbox"><label for="checkbox2">Sorties
+                <div class="cell small-12"><input id="checkbox2" type="checkbox" name="inscrit"><label for="checkbox2">Sorties
                         auxquelles je suis inscrit/e</label></div>
-                <div class="cell small-12"><input id="checkbox3" type="checkbox"><label for="checkbox3">Sorties
+                <div class="cell small-12"><input id="checkbox3" type="checkbox" name="nonInscrit"><label for="checkbox3">Sorties
                         auxquelles je ne suis pas inscrit/e</label></div>
-                <div class="cell small-12"><input id="checkbox4" type="checkbox"><label for="checkbox4">Sorties
+                <div class="cell small-12"><input id="checkbox4" type="checkbox" name="passee"><label for="checkbox4">Sorties
                         passées</label></div>
             </div>
         </div>

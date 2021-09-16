@@ -24,6 +24,7 @@ class VilleController extends AbstractController
             return $this->redirectToRoute('app_login');
         } else {
             if($this->getUser()->getAdministrateur() == 1) {
+
                 return $this->render('ville/index.html.twig', [
                     'villes' => $villeRepository->findAll(),
                 ]);

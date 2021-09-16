@@ -29,20 +29,13 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
-
+use Symfony\Component\Validator\Constraints\Date;
 
 /**
  * @Route("/sortie")
  */
 class SortieController extends AbstractController
 {
-    private Security $security;
-
-    public function __construct(Security $security)
-    {
-        $this->security = $security;
-    }
-
     /**
      * @Route("/", name="sortie_index", methods={"GET"})
      */
@@ -127,6 +120,20 @@ class SortieController extends AbstractController
                         }
                     }
                     if (!$inscrit) {
+                        array_push($sortieTri, $sortie);
+                    }
+                }
+                $sorties = $sortieTri;
+            }
+
+            if (($request->get('entre') != null) && ($request->get('et') != null)) {
+                $sortieTri = array();
+                $tsDate1 = strtotime($request->get('entre'));
+                $tsDate2 = strtotime($request->get('et')) + 86399; //Pour avoir seulement jusqu'à minuit le jour renseigné et pas au delà, enlever le nombre
+
+                foreach ($sorties as $sortie) {
+                    $tsSortie = $sortie->getDateDebut()->getTimestamp();
+                    if (($tsSortie > $tsDate1) && ($tsSortie < $tsDate2)) {
                         array_push($sortieTri, $sortie);
                     }
                 }

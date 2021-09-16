@@ -31,19 +31,8 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Validator\Constraints\Date;
 
-
-/**
- * @Route("/sortie")
- */
 class SortieController extends AbstractController
 {
-    private Security $security;
-
-    public function __construct(Security $security)
-    {
-        $this->security = $security;
-    }
-
     /**
      * @Route("/", name="sortie_index", methods={"GET"})
      */

@@ -19,7 +19,7 @@
 {#                <button class="menu-icon" type="button"></button>#}
             </div>
             <div class="title-bar-center">
-                <h1 class="title-bar-text">Sortir.com</h1>
+                <a href="/home"><h1 class="title_site title-bar-text">Sortir.com</h1></a>
             </div>
             <div class="title-bar-right">
 {#                <h4 class="title-bar-text">Accueil</h4>#}
@@ -48,7 +48,7 @@
                     {% if app.user == null %}
                         <li><a class="white-font" href="/login">Se Connecter</a></li>
                     {% else %}
-                        <li><a class="white-font" href="#">Mon profil</a></li>
+                        <li><a class="white-font" href="{{ path('profil_show', {'id': app.user.id}) }}">Mon profil</a></li>
                         <li><a class="white-font" href="/logout">Se déconnecter</a></li>
                     {% endif %}
                 </ul>

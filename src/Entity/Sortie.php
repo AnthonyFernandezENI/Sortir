@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\SortieRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=SortieRepository::class)
@@ -29,6 +30,8 @@ class Sortie
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Assert\Type(type="integer", message="Durée en chiffre uniquement")
+     *
      */
     private $duree;
 
@@ -38,6 +41,7 @@ class Sortie
     private $dateCloture;
 
     /**
+     * @Assert\Type(type="integer", message="Nombre de places en chiffre uniquement")
      * @ORM\Column(type="integer")
      */
     private $nbInscriptionsMax;

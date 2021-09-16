@@ -121,7 +121,7 @@
                                 <td>{{ sortie.dateDebut ? sortie.dateDebut|date('d/m/Y H:i') : '' }}</td>
                                 <td class="colonne_table_tel">{{ sortie.lieu.ville.nom }}</td>
                                 <td class="colonne_table_pc">{{ sortie.dateCloture ? sortie.dateCloture|date('d/m/Y') : '' }}</td>
-                                <td class="colonne_table_pc">{{ sortie.inscriptions.count() }} / {{ sortie.nbInscriptionsMax }}</td>
+                                <td> <div style="text-align: center;" class="colonne_table_pc">{{ sortie.inscriptions.count() }} / {{ sortie.nbInscriptionsMax }} </div></td>
                                 <td class="colonne_table_pc">{{ sortie.etat.libelle }}</td>
                                 <td class="colonne_table_pc">
                                     <div style="text-align: center;">
@@ -140,14 +140,14 @@
 
                                 <td class="colonne_table_pc">
                                     {% if sortie.etat.libelle != "Créée" %}
-                                        <a href="{{ path('sortie_show', {'id': sortie.id}) }}">Afficher</a>
+                                        <a href="{{ path('sortie_show', {'id': sortie.id}) }}">Afficher</a><br>
                                     {% endif %}
                                     {% if app.user.id == sortie.organisateur.id %}
                                         {% if sortie.etat.libelle == "Créée" %}
-                                            <a href="{{ path('sortie_edit', {'id': sortie.id}) }}">Modifier</a>
-                                            <a href="{{ path('sortie_publier', {'id': sortie.id}) }}">Publier</a>
+                                            <a href="{{ path('sortie_edit', {'id': sortie.id}) }}">Modifier</a><br>
+                                            <a href="{{ path('sortie_publier', {'id': sortie.id}) }}">Publier</a><br>
                                         {% elseif sortie.etat.libelle == "Ouverte" %}
-                                            <a href="{{ path('sortie_cancel', {'id': sortie.id}) }}">Annuler</a>
+                                            <a href="{{ path('sortie_cancel', {'id': sortie.id}) }}">Annuler</a><br>
                                         {% endif %}
                                     {% else %}
                                         {# Foreach pour vérifier si l'utilisateur peut s'inscrire #}
@@ -155,7 +155,7 @@
                                         {% for inscription in sortie.inscriptions %}
                                             {% if inscription.participant.id == app.user.id %}
                                                 <a href="{{ path('sortie_quit', {'id': sortie.id}) }}">Se
-                                                    désister</a>
+                                                    désister</a> <br>
                                                 {% set inscrit = true %}
                                             {% endif %}
                                         {% endfor %}

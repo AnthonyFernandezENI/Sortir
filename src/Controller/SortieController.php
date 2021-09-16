@@ -91,7 +91,6 @@ class SortieController extends AbstractController
             }
 
             if ($request->get('site')) { //S'il y a eu un retour de formulaire
-
                 $sorties = $sortieRepository->findBy($filtre);
             }
 
@@ -138,8 +137,7 @@ class SortieController extends AbstractController
             $sortieTriArchive = array();
             foreach ($sorties as $sortie) {
                 $timeStampLimiteArchivage = $sortie->getDateDebut()->getTimestamp() + ($sortie->getDuree() * 60) + 2629800;
-
-                if ($timeStampLimiteArchivage > time()) {
+                if (($timeStampLimiteArchivage > time()) && ($sortie->getEtat()->getLibelle() != 'Supprimée')) {
                     array_push($sortieTriArchive, $sortie);
                 }
             }

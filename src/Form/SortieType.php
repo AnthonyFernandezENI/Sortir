@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Lieu;
 use App\Entity\Sortie;
+use DateTime;
 use Doctrine\DBAL\Types\DateTimeImmutableType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -27,12 +28,11 @@ class SortieType extends AbstractType
     {
         $builder
             ->add('nom',TextType::class, ['label'=>"Nom de la sortie :"])
-            ->add('dateDebut', DateTimeType::class, array(
+            ->add('dateDebut', DateTimeType::class, [
                 'label'=>"Date et heure de la sortie :",
                 "widget" => 'single_text',
-                "data" => new \DateTime(),
-                "with_seconds" => false
-            ))
+                "with_seconds" => false,
+            ])
             //->add('dateDebut', DateTimeImmutableType::class, ['label'=>"Date et heure de la sortie :",'widget' => 'single_text'])
             ->add('dateCloture', DateType::class, ['label'=>"Date limite d'inscription :", "data" => new \DateTime() , 'widget' => 'single_text'])
             ->add('nbInscriptionsMax',NumberType::class, ['label'=>"Nombre de place :"])

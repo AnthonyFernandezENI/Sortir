@@ -5,7 +5,12 @@
 {% block body %}
     <div class="grid-container">
         <div class="grid-x grid-margin-x">
+
+            {% if app.user.id == participant.id%}
             <h3 class="cell small-4 large-offset-4 title-centered">Modifier mon profil</h3>
+            {% else %}
+            <h3 class="cell small-4 large-offset-4 title-centered">Modifier profil de {{ participant.nom }}</h3>
+             {% endif %}
         </div>
 {#        <form name="participant" method="post">#}
             {{ form_start(form) }}

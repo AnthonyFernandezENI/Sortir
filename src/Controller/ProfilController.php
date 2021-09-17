@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use function PHPUnit\Framework\isEmpty;
 
 /**
  * @Route("/profil")
@@ -39,8 +40,35 @@ class ProfilController extends AbstractController
      */
     public function new(Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
     {
+        $repo = $this->getDoctrine()->getRepository(Participant::class);
         if (!$this->isGranted('IS_AUTHENTICATED_FULLY')) {
-            return $this->redirectToRoute('app_login');
+            if (empty($repo->findAll())) {
+                $participant = new Participant();
+                $form = $this->createForm(ParticipantType::class, $participant);
+                $form->handleRequest($request);
+//                dd($form);
+                if ($form->isSubmitted() && $form->isValid()) {
+                    $participant->setAdministrateur(true);
+                    $participant->setActif(true);
+                    $participant->setPassword(
+
+                        $passwordEncoder->encodePassword(
+                            $participant,
+                            $form->get('password')->getData()
+                        )
+                    );
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $entityManager->persist($participant);
+                    $entityManager->flush();
+                    return $this->redirectToRoute('app_login');
+                }
+                return $this->renderForm('profil/new.html.twig', [
+                    'participant' => $participant,
+                    'form' => $form,
+                ]);
+            } else {
+                return $this->redirectToRoute('app_login');
+            }
         } else {
             if ($this->getUser()->getAdministrateur() == 1) {
                 $participant = new Participant();

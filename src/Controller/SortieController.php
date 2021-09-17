@@ -340,7 +340,7 @@ class SortieController extends AbstractController
     public function join(Sortie $sortie): Response
     {
         $user = $this->getUser();
-        if ($sortie->getEtat()->getLibelle() == "Ouverte") {
+        if (($sortie->getEtat()->getLibelle() == "Ouverte") && (($sortie->getDateCloture()->getTimestamp() + 86399) >= time())) {
             if ($sortie->getEtat()->getLibelle() != "Clôturée") {
                 foreach ($sortie->getInscriptions() as $inscription) {
                     if ($inscription->getParticipant() == $user) {

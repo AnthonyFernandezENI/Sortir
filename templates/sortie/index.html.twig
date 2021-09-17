@@ -159,7 +159,7 @@
                                                 {% set inscrit = true %}
                                             {% endif %}
                                         {% endfor %}
-                                        {% if (sortie.inscriptions.count() < sortie.nbInscriptionsMax) and (sortie.etat.libelle == "Ouverte") and (not inscrit) %}
+                                        {% if (sortie.inscriptions.count() < sortie.nbInscriptionsMax) and (sortie.etat.libelle == "Ouverte") and (not inscrit) and ((sortie.dateCloture|date('U')+ 86399) > 'now'|date('U')) %}
                                             <a href="{{ path('sortie_join', {'id': sortie.id}) }}">S'inscrire</a>
                                         {% endif %}
                                     {% endif %}
